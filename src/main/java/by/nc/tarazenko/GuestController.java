@@ -27,7 +27,6 @@ public class GuestController {
 
 /*    @RequestMapping(value = "/guest/{id}", method = RequestMethod.GET)
     public Optional<GuestDTO> findById(@RequestParam("id") Optional<Integer> id){
-
         System.out.println(id.get());
         return guestService.getById(id.get());
     }*/

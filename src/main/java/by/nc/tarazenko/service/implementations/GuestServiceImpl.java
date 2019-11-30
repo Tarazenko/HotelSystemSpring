@@ -38,8 +38,9 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public List<Guest> getAll() {
-        logger.info(guestRepository.getOne(1).toString());
-        return new ArrayList<>();
+        //todo Сделал говно
+        logger.info(guestRepository.findAll());
+        return guestRepository.findAll();
     }
 
     @Override

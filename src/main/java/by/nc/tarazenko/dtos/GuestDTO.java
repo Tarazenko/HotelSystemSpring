@@ -1,9 +1,12 @@
 package by.nc.tarazenko.dtos;
 
-import java.util.List;
-import java.util.Objects;
+import lombok.Data;
 
+import java.util.List;
+
+@Data
 public class GuestDTO {
+    private int id;
     private String phoneNumber;
     private List<Integer> roomNumbers;
     private String firstName;
@@ -15,7 +18,7 @@ public class GuestDTO {
     private double bill;
 
 
-    public GuestDTO(){
+   /* public GuestDTO(){
     }
 
     public GuestDTO(String phoneNumber, List<Integer> roomNumbers, String firstName,
@@ -138,5 +141,5 @@ public class GuestDTO {
                 ", attendanceCost=" + attendanceCost +
                 ", bill=" + bill +
                 '}';
-    }
+    }*/
 }

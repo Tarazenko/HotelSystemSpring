@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface Service<T> {
-    Optional <T> getById(int id);
+    T getById(int id);
 
-    List<Guest> getAll();
+    List<T> getAll();
 
     void create(T entity);
 
-    Optional<T> update(T entity);
+    T update(T entity);
 
     void delete(T entity);
 

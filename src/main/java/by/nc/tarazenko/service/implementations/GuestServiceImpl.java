@@ -47,6 +47,7 @@ public class GuestServiceImpl implements GuestService {
     public void create(GuestDTO guestDTO) {
         guestRepository.saveAndFlush(fromDTO(guestDTO));
     }
+
     private Guest fromDTO(GuestDTO guestDTO) {
         Guest guest = new Guest();
         guest.setPhoneNumber(guestDTO.getPhoneNumber());

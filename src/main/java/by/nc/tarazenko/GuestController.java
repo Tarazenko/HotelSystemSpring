@@ -4,19 +4,17 @@ import by.nc.tarazenko.dtos.GuestDTO;
 import by.nc.tarazenko.entity.Guest;
 import by.nc.tarazenko.service.GuestService;
 import com.google.gson.Gson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
-//import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
 
 @RestController
 public class GuestController {
-    Logger logger = LoggerFactory.getLogger(GuestController.class);
+    Logger logger = Logger.getLogger(GuestController.class);
     @Autowired
     private GuestService guestService;
 

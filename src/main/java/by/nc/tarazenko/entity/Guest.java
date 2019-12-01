@@ -19,9 +19,12 @@ public class Guest {
     @Column(name = "bill")
     private double bill;
 
-    @OneToOne
+   /* @OneToOne
     @JoinTable(name = "passport",
             joinColumns = @JoinColumn(name = "passport_id", insertable = false, updatable = false),
     inverseJoinColumns = @JoinColumn(name = "passport_id", insertable = false, updatable = false))
+    private Passport passport;*/
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="passport_id")
     private Passport passport;
 }

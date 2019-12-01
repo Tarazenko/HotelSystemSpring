@@ -31,4 +31,7 @@ public class Passport {
 
     @Column(name = "number")
     private String number;
+
+    @OneToOne(mappedBy = "passport")
+    private Guest guest;
 }

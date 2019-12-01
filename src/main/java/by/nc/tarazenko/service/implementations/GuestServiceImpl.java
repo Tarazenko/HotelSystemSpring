@@ -28,15 +28,15 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public GuestDTO getById(int id) {
         Guest guest = guestRepository.findById(id).get();
+        //logger.debug(guest.toString());
         return toDTO(guest);
     }
 
     @Override
     public List<GuestDTO> getAll() {
         logger.info("Get all from database.");
-        logger.debug(guestRepository.getOne(1).toString());
         List<Guest> guests = guestRepository.findAll();
-        logger.debug(guests);
+        //logger.debug(guests);
 
         List<GuestDTO> guestDTOs = new ArrayList<>();
         for (Guest guest : guests){

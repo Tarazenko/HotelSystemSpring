@@ -13,7 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 @RestController
-@RequestMapping("guests/")
+@RequestMapping("guests")
 public class GuestController {
     Logger logger = Logger.getLogger(GuestController.class);
     @Autowired

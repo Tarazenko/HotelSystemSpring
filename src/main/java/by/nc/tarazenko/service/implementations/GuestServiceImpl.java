@@ -39,7 +39,7 @@ public class GuestServiceImpl implements GuestService {
         //logger.debug(guests);
 
         List<GuestDTO> guestDTOs = new ArrayList<>();
-        for (Guest guest : guests){
+        for (Guest guest : guests) {
             guestDTOs.add(toDTO(guest));
         }
         return guestDTOs;
@@ -53,6 +53,7 @@ public class GuestServiceImpl implements GuestService {
     private Guest fromDTO(GuestDTO guestDTO) {
         Guest guest = new Guest();
         guest.setPhoneNumber(guestDTO.getPhoneNumber());
+        guest.setId(guestDTO.getId());
         Passport passport = new Passport();
         passport.setNumber(guestDTO.getPassportNumber());
         passport.setFirstName(guestDTO.getFirstName());
@@ -95,18 +96,32 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
-    public GuestDTO update(GuestDTO entity) {
-        return null;
+    public boolean update(GuestDTO guestDTO) {
+        Guest guest = fromDTO(guestDTO);
+        logger.debug(guest);
+        boolean ok = true;
+        if (guestRepository.findById(guest.getId()).isPresent()){
+            guestRepository.saveAndFlush(guest);
+            logger.debug("Update guest id = " + guest.getId());
+        }
+        else{
+            logger.debug("Guest not found.");
+            ok = false;
+        }
+        return  ok;
     }
 
-
     @Override
-    public void delete(GuestDTO entity) {
-
-    }
-
-    @Override
-    public void deleteById(int entityId) {
-
+    public boolean deleteById(int guestId) {
+        boolean ok = true;
+        if (guestRepository.findById(guestId).isPresent()){
+            guestRepository.deleteById(guestId);
+            logger.debug("Found and deleted with id = " + guestId);
+        }
+        else{
+            logger.debug("Guest not found.");
+            ok = false;
+        }
+        return  ok;
     }
 }

@@ -12,11 +12,9 @@ public interface Service<T> {
 
     void create(T entity);
 
-    T update(T entity);
+    boolean update(T entity);
 
-    void delete(T entity);
-
-    void deleteById(int entityId);
+    boolean deleteById(int entityId);
 }
 
 

@@ -1,16 +1,21 @@
 package by.nc.tarazenko;
 
 import by.nc.tarazenko.dtos.GuestDTO;
+import by.nc.tarazenko.entity.Attendance;
+import by.nc.tarazenko.entity.AttendancesGuestsConnect;
 import by.nc.tarazenko.entity.Guest;
 import by.nc.tarazenko.service.GuestService;
 import com.google.gson.Gson;
 
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +39,6 @@ public class GuestController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Void> save(@RequestBody GuestDTO guest) {
-        //GuestDTO guest = new Gson().fromJson(body, GuestDTO.class);
         try {
             logger.info("Save guest");
             logger.debug("Seve guest = " + guest);
@@ -79,6 +83,19 @@ public class GuestController {
         } else {
             logger.info("No guest with id " + id);
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping(value = "/{id}/attendances")
+    public List<Attendance> getAttendances(@PathVariable int id){
+        List<Attendance> attendances = guestService.getAttendances(id);
+       // logger.debug(attendances);
+        logger.debug(attendances);
+        try {
+            return attendances;
+        } catch (Exception ex) {
+            logger.warn(ex.getStackTrace());
+            return null;
         }
     }
 }

@@ -1,8 +1,11 @@
 package by.nc.tarazenko.service.implementations;
 
 import by.nc.tarazenko.dtos.GuestDTO;
+import by.nc.tarazenko.entity.Attendance;
+import by.nc.tarazenko.entity.AttendancesGuestsConnect;
 import by.nc.tarazenko.entity.Guest;
 import by.nc.tarazenko.entity.Passport;
+import by.nc.tarazenko.repository.AttendancesGuestsConnectRepository;
 import by.nc.tarazenko.repository.GuestRepository;
 import by.nc.tarazenko.repository.PassportRepository;
 import by.nc.tarazenko.service.GuestService;
@@ -14,10 +17,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class GuestServiceImpl implements GuestService {
     final static Logger logger = Logger.getLogger(GuestServiceImpl.class);
+
+    @Autowired
+    private  AttendancesGuestsConnectRepository attendancesGuestsConnectRepository ;
 
     @Autowired
     private GuestRepository guestRepository;
@@ -123,5 +130,12 @@ public class GuestServiceImpl implements GuestService {
             ok = false;
         }
         return  ok;
+    }
+
+    @Override
+    public List<Attendance> getAttendances(int guestId) {
+        List<Attendance> list =  guestRepository.findById(guestId).get().getAttendances();
+        logger.debug(list);
+        return  list;
     }
 }

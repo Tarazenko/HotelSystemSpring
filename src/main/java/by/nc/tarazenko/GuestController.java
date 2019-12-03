@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -87,15 +88,12 @@ public class GuestController {
     }
 
     @GetMapping(value = "/{id}/attendances")
-    public List<Attendance> getAttendances(@PathVariable int id){
-        List<Attendance> attendances = guestService.getAttendances(id);
-       // logger.debug(attendances);
-        logger.debug(attendances);
+    public ResponseEntity<List<Attendance>> getAttendances(@PathVariable int id){
         try {
-            return attendances;
+            return ResponseEntity.ok(guestService.getAttendances(id));
         } catch (Exception ex) {
             logger.warn(ex.getStackTrace());
-            return null;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

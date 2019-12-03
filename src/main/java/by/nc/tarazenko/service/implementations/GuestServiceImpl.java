@@ -134,8 +134,6 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public List<Attendance> getAttendances(int guestId) {
-        List<Attendance> list =  guestRepository.findById(guestId).get().getAttendances();
-        logger.debug(list);
-        return  list;
+        return  guestRepository.findById(guestId).get().getAttendances();
     }
 }

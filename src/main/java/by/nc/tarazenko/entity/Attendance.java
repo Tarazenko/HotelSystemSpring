@@ -1,11 +1,11 @@
 package by.nc.tarazenko.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.*;
 
-//@Data
 @Entity
 @Table(name = "attendance")
 public class Attendance {
@@ -20,13 +20,15 @@ public class Attendance {
     @Column(name = "cost")
     double cost;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "attendances", fetch = FetchType.LAZY)
     private List<Guest> guests = new ArrayList<>();
 
     public Attendance() {
     }
 
-    public Attendance(String name, double cost, List<Guest> guests) {
+    public Attendance(int id, String name, double cost, List<Guest> guests) {
+        this.id = id;
         this.name = name;
         this.cost = cost;
         this.guests = guests;

@@ -5,6 +5,7 @@ import by.nc.tarazenko.entity.Attendance;
 import by.nc.tarazenko.entity.AttendancesGuestsConnect;
 import by.nc.tarazenko.entity.Guest;
 import by.nc.tarazenko.entity.Passport;
+import by.nc.tarazenko.repository.AttendanceRepository;
 import by.nc.tarazenko.repository.AttendancesGuestsConnectRepository;
 import by.nc.tarazenko.repository.GuestRepository;
 import by.nc.tarazenko.repository.PassportRepository;
@@ -24,18 +25,14 @@ public class GuestServiceImpl implements GuestService {
     final static Logger logger = Logger.getLogger(GuestServiceImpl.class);
 
     @Autowired
-    private  AttendancesGuestsConnectRepository attendancesGuestsConnectRepository ;
+    private AttendanceRepository attendanceRepository;
 
     @Autowired
     private GuestRepository guestRepository;
 
-    @Autowired
-    private PassportRepository passportRepository;
-
     @Override
     public GuestDTO getById(int id) {
         Guest guest = guestRepository.findById(id).get();
-        //logger.debug(guest.toString());
         return toDTO(guest);
     }
 
@@ -43,8 +40,6 @@ public class GuestServiceImpl implements GuestService {
     public List<GuestDTO> getAll() {
         logger.info("Get all from database.");
         List<Guest> guests = guestRepository.findAll();
-        //logger.debug(guests);
-
         List<GuestDTO> guestDTOs = new ArrayList<>();
         for (Guest guest : guests) {
             guestDTOs.add(toDTO(guest));
@@ -88,8 +83,8 @@ public class GuestServiceImpl implements GuestService {
             guestDTO.setSecondName(guest.getPassport().getSecondName());
             guestDTO.setThirdName(guest.getPassport().getThirdName());
             guestDTO.setPassportNumber(guest.getPassport().getNumber());
-            /*List<Attendance> attendances = guestRepository.getAttendances(guest.getId());
-            List<String> attendanceNames = new ArrayList<>();
+            List<Attendance> attendances = guestRepository.findById(guest.getId()).get().getAttendances();
+           /* List<String> attendanceNames = new ArrayList<>();
             List<Double> attendanceCosts = new ArrayList<>();
             for (Attendance attendance : attendances) {
                 attendanceNames.add(attendance.getName());
@@ -97,6 +92,7 @@ public class GuestServiceImpl implements GuestService {
             }
             guestDTO.setAttendanceCost(attendanceCosts);
             guestDTO.setAttendanceName(attendanceNames);*/
+            guestDTO.setAttendances(attendances);
             return guestDTO;
         }
         return null;
@@ -107,33 +103,48 @@ public class GuestServiceImpl implements GuestService {
         Guest guest = fromDTO(guestDTO);
         logger.debug(guest);
         boolean ok = true;
-        if (guestRepository.findById(guest.getId()).isPresent()){
+        if (guestRepository.findById(guest.getId()).isPresent()) {
             guestRepository.saveAndFlush(guest);
             logger.debug("Update guest id = " + guest.getId());
-        }
-        else{
+        } else {
             logger.debug("Guest not found.");
             ok = false;
         }
-        return  ok;
+        return ok;
     }
 
     @Override
     public boolean deleteById(int guestId) {
         boolean ok = true;
-        if (guestRepository.findById(guestId).isPresent()){
+        if (guestRepository.findById(guestId).isPresent()) {
             guestRepository.deleteById(guestId);
             logger.debug("Found and deleted with id = " + guestId);
-        }
-        else{
+        } else {
             logger.debug("Guest not found.");
             ok = false;
         }
-        return  ok;
+        return ok;
     }
 
     @Override
     public List<Attendance> getAttendances(int guestId) {
-        return  guestRepository.findById(guestId).get().getAttendances();
+        return guestRepository.findById(guestId).get().getAttendances();
+    }
+
+    @Override
+    public int addAttendance(int guestId, int attendanceId) {
+        Attendance attendance = attendanceRepository.getOne(attendanceId);
+        Guest guest = guestRepository.getOne(guestId);
+        int checker = 1;
+        if (attendance == null) {
+            checker = -1;
+        } else if (guest == null) {
+            checker = 0;
+        } else {
+            guest.getAttendances().add(attendance);
+            guest.setBill(guest.getBill() + attendance.getCost());
+            guestRepository.saveAndFlush(guest);
+        }
+        return checker;
     }
 }

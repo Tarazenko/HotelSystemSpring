@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
 
 @Entity
@@ -87,7 +88,6 @@ public class Attendance {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", cost=" + cost +
-               // ", guests=" + guests +
                 '}';
     }
     /* @OneToMany(mappedBy = "attendance")

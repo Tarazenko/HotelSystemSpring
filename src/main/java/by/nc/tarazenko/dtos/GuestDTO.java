@@ -1,5 +1,6 @@
 package by.nc.tarazenko.dtos;
 
+import by.nc.tarazenko.entity.Attendance;
 import lombok.Data;
 
 import java.util.List;
@@ -13,8 +14,7 @@ public class GuestDTO {
     private String secondName;
     private String thirdName;
     private String passportNumber;
-    private List<String> attendanceName;
-    private List<Double> attendanceCost;
+    private List<Attendance> attendances;
     private double bill;
 
 

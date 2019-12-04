@@ -1,22 +1,15 @@
-package by.nc.tarazenko;
+package by.nc.tarazenko.controller;
 
 import by.nc.tarazenko.dtos.GuestDTO;
 import by.nc.tarazenko.entity.Attendance;
-import by.nc.tarazenko.entity.AttendancesGuestsConnect;
-import by.nc.tarazenko.entity.Guest;
 import by.nc.tarazenko.service.GuestService;
-import com.google.gson.Gson;
 
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +31,7 @@ public class GuestController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public ResponseEntity<Void> save(@RequestBody GuestDTO guest) {
         try {
             logger.info("Save guest");
@@ -60,7 +53,7 @@ public class GuestController {
             } else {
                 return ResponseEntity.notFound().build();
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             logger.warn(ex.getStackTrace());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -88,9 +81,28 @@ public class GuestController {
     }
 
     @GetMapping(value = "/{id}/attendances")
-    public ResponseEntity<List<Attendance>> getAttendances(@PathVariable int id){
+    public ResponseEntity<List<Attendance>> getAttendances(@PathVariable int id) {
         try {
             return ResponseEntity.ok(guestService.getAttendances(id));
+        } catch (Exception ex) {
+            logger.warn(ex.getStackTrace());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping(value = "/{guestId}/attendances/{attendanceId}")
+    public ResponseEntity<GuestDTO> setAttendance(@PathVariable int guestId,
+                                                  @PathVariable int attendanceId) {
+        try {
+            int checker = guestService.addAttendance(guestId, attendanceId);
+            if (checker == -1) {
+                //todo information message
+                return ResponseEntity.notFound().build();
+            } else if (checker == 0) {
+                return ResponseEntity.notFound().build();
+            } else{
+                return ResponseEntity.ok().build();
+            }
         } catch (Exception ex) {
             logger.warn(ex.getStackTrace());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

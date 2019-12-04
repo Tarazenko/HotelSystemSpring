@@ -10,4 +10,5 @@ import java.util.Set;
 
 public interface GuestService extends Service<GuestDTO> {
     List<Attendance> getAttendances(int guestId);
+    int addAttendance(int guestId, int attendanceId);
 }

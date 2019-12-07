@@ -13,7 +13,7 @@ import java.util.*;
 public class Guest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "guest_id")
+    @Column(name = "guestId")
     private int id;
 
     @Column(name = "phone", nullable = true)
@@ -26,12 +26,10 @@ public class Guest {
     @JoinColumn(name="passport_id")
     private Passport passport;
 
-
     @ManyToMany
     @JoinTable(
             name = "attendance_has_guests",
-            joinColumns = @JoinColumn(name = "guest_id"),
+            joinColumns = @JoinColumn(name = "guestId"),
             inverseJoinColumns = @JoinColumn(name = "attendance_id"))
     List<Attendance> attendances = new ArrayList<>();
-
 }

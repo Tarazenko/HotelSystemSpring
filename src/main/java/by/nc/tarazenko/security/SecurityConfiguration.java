@@ -16,35 +16,47 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private UserServiceImpl userServiceImpl = new UserServiceImpl();
+    //private UserServiceImpl userService = new UserServiceImpl();
+    @Autowired
+    UserServiceImpl userService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.httpBasic().and()
+        http.httpBasic().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/guests").permitAll();
+                .antMatchers(HttpMethod.POST,"/guests").hasRole("ADMIN");
+               /* .antMatchers(HttpMethod.GET, "/guests").hasRole("ROlE_ADMIN")
+                .antMatchers(HttpMethod.PUT, "/guests").permitAll()
+                .and()
+                .authorizeRequests()
 
 
-               // .and()
+                .antMatchers(HttpMethod.GET, "/attendances").permitAll()
+                .antMatchers(HttpMethod.POST, "/attendances").permitAll()
+                .and().csrf().disable();*/
+        /* http.httpBasic().and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST,"/guests").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/guests").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/guests").permitAll()
+                .and()
+                .authorizeRequests()
+               // .antMatchers("/tickets").hasRole("USER")
 
-                /*.authorizeRequests()
-                .antMatchers("/tickets").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/attendances").permitAll()
+                .antMatchers(HttpMethod.POST, "/attendances").permitAll();*/
 
-                .antMatchers(HttpMethod.GET, "/planes").hasRole("USER")
-                .antMatchers(HttpMethod.POST, "/planes").hasRole("ADMIN")
 
-                .antMatchers(HttpMethod.GET, "/plane_seats").hasRole("USER")
-                .antMatchers(HttpMethod.POST,"/plane_seats").hasRole("ADMIN")
 
-                .antMatchers("/registration").permitAll();*/
+                //.antMatchers("/registration").permitAll();
 
-        http.csrf().disable();
+       // http.csrf().disable();
     }
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-        auth.userDetailsService(userServiceImpl);
+        auth.userDetailsService(userService);
     }
 }

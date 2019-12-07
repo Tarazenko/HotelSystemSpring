@@ -14,8 +14,8 @@ public class AttendancesGuestsConnect {
     GuestAttendancesKey id;
 
     @ManyToOne
-    @MapsId("guest_id")
-    @JoinColumn(name = "guest_id")
+    @MapsId("guestId")
+    @JoinColumn(name = "guestId")
     Guest guest;
 
     @ManyToOne

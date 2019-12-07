@@ -13,5 +13,5 @@ public class GuestAttendancesKey implements Serializable {
     int attendanceId;
 
     @Column(name = "guest_id")
-    int guest_id;
+    int guestId;
 }

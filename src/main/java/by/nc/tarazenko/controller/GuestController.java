@@ -2,11 +2,15 @@ package by.nc.tarazenko.controller;
 
 import by.nc.tarazenko.dtos.GuestDTO;
 import by.nc.tarazenko.entity.Attendance;
+import by.nc.tarazenko.repository.UserRepository;
 import by.nc.tarazenko.service.GuestService;
 
+import by.nc.tarazenko.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +25,15 @@ public class GuestController {
     @Autowired
     private GuestService guestService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping
     public ResponseEntity<List<GuestDTO>> getAll() {
         try {
+            //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            //String name =  auth.getName();
+            //System.out.println(userRepository.findByUserName(name).get().getAuthorities());
             return ResponseEntity.ok(guestService.getAll());
         } catch (Exception ex) {
             logger.warn(ex.getStackTrace());

@@ -38,9 +38,9 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(Role.USER);
-        if (role == Role.ADMIN) {
-            authorities.add(Role.ADMIN);
+        authorities.add(Role.ROLE_USER);
+        if (role == Role.ROLE_ADMIN) {
+            authorities.add(Role.ROLE_ADMIN);
         }
         return authorities;
     }

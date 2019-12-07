@@ -16,10 +16,10 @@ public class Attendance {
     int id;
 
     @Column(name = "name")
-    String name;
+    private String name;
 
     @Column(name = "cost")
-    double cost;
+    private double cost;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "attendances", fetch = FetchType.LAZY)

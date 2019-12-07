@@ -42,7 +42,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public void create(AttendanceDTO entity) {
+    public void create(AttendanceDTO attendanceDTO) {
+        attendanceRepository.saveAndFlush(fromDTO(attendanceDTO));
     }
 
     @Override
@@ -70,7 +71,15 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public boolean deleteById(int entityId) {
-        return false;
+    public boolean deleteById(int attendanceId) {
+        boolean ok = true;
+        if (attendanceRepository.findById(attendanceId).isPresent()) {
+            attendanceRepository.deleteById(attendanceId);
+            logger.debug("Found and deleted with id = " + attendanceId);
+        } else {
+            logger.debug("Attendance not found.");
+            ok = false;
+        }
+        return ok;
     }
 }

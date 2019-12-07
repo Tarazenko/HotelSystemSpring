@@ -1,9 +1,6 @@
 package by.nc.tarazenko.controller;
 
 import by.nc.tarazenko.dtos.AttendanceDTO;
-import by.nc.tarazenko.dtos.GuestDTO;
-import by.nc.tarazenko.entity.Attendance;
-import by.nc.tarazenko.repository.AttendanceRepository;
 import by.nc.tarazenko.service.AttendanceService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +56,28 @@ public class AttendanceController {
         } catch (Exception ex) {
             logger.warn(ex.getStackTrace());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> save(@RequestBody AttendanceDTO attendance) {
+        try {
+            logger.debug("Seve attendance = " + attendance);
+            attendanceService.create(attendance);
+            return ResponseEntity.ok().build();
+        } catch (Exception ex) {
+            logger.warn(ex.getStackTrace());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteGuest(@PathVariable int id) {
+        if (attendanceService.deleteById(id)) {
+            return ResponseEntity.noContent().build();
+        } else {
+            logger.info("No guest with id " + id);
+            return ResponseEntity.notFound().build();
         }
     }
 }

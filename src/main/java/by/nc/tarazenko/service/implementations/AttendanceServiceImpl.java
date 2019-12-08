@@ -5,6 +5,7 @@ import by.nc.tarazenko.dtos.AttendanceDTO;
 import by.nc.tarazenko.entity.Attendance;
 import by.nc.tarazenko.repository.AttendanceRepository;
 import by.nc.tarazenko.service.AttendanceService;
+import by.nc.tarazenko.service.exceptions.AttendanceNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public AttendanceDTO getById(int id) {
-        return attendanceConvector.toDTO(attendanceRepository.getOne(id));
+        Attendance attendance = attendanceRepository.findById(id).orElseThrow(()->
+                new AttendanceNotFoundException("There is no such attendance."));
+        return attendanceConvector.toDTO(attendance);
     }
 
     @Override
@@ -37,36 +40,25 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public void create(AttendanceDTO attendanceDTO) {
-        attendanceRepository.saveAndFlush(attendanceConvector.fromDTO(attendanceDTO));
+    public AttendanceDTO create(AttendanceDTO attendanceDTO) {
+        Attendance attendance = attendanceConvector.fromDTO(attendanceDTO);
+        attendance = attendanceRepository.saveAndFlush(attendance);
+        return attendanceConvector.toDTO(attendance);
     }
 
     @Override
-    public boolean update(AttendanceDTO attendanceDTO) {
-        Attendance newAttendance = attendanceConvector.fromDTO(attendanceDTO);
-        boolean ok = true;
-        Attendance attendance = attendanceRepository.getOne(newAttendance.getId());
-        if (attendance != null) {
-            attendance.setCost(newAttendance.getCost());
-            attendance.setName(newAttendance.getName());
-            logger.debug(attendance);
-            attendanceRepository.saveAndFlush(attendance);
-        } else {
-            ok = false;
-        }
-        return ok;
+    public AttendanceDTO update(AttendanceDTO attendanceDTO) {
+        Attendance attendance = attendanceConvector.fromDTO(attendanceDTO);
+        attendance = attendanceRepository.findById(attendance.getId()).orElseThrow(()->
+                new AttendanceNotFoundException("There is no such attendance."));
+        attendance = attendanceRepository.saveAndFlush(attendance);
+        return attendanceConvector.toDTO(attendance);
     }
 
     @Override
-    public boolean deleteById(int attendanceId) {
-        boolean ok = true;
-        if (attendanceRepository.findById(attendanceId).isPresent()) {
-            attendanceRepository.deleteById(attendanceId);
-            logger.debug("Found and deleted with id = " + attendanceId);
-        } else {
-            logger.debug("Attendance not found.");
-            ok = false;
-        }
-        return ok;
+    public void deleteById(int attendanceId) {
+       Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(()->
+                new AttendanceNotFoundException("There is no such attendance."));
+       attendanceRepository.deleteById(attendanceId);
     }
 }

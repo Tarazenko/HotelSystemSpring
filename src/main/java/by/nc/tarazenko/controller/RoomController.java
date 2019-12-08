@@ -26,19 +26,15 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<RoomDTO> create(@RequestBody RoomDTO roomDTO) {
         logger.debug("Seve room = " + roomDTO);
-        roomService.create(roomDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(roomService.create(roomDTO));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@RequestBody RoomDTO roomDTO, @PathVariable int id) {
-        roomDTO.setId(id);
-        if (roomService.update(roomDTO))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<RoomDTO> update(@RequestBody RoomDTO roomDTO, @PathVariable int id) {
+       roomDTO.setId(id);
+       return ResponseEntity.ok(roomService.update(roomDTO));
     }
 
     @GetMapping(value = "/{id}")
@@ -48,10 +44,8 @@ public class RoomController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable int id) {
-        if (roomService.deleteById(id))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+       roomService.deleteById(id);
+       return ResponseEntity.ok().build();
     }
 }
 

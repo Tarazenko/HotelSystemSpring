@@ -8,6 +8,8 @@ import by.nc.tarazenko.repository.AttendanceRepository;
 import by.nc.tarazenko.repository.GuestRepository;
 import by.nc.tarazenko.service.GuestService;
 
+import by.nc.tarazenko.service.exceptions.AttendanceNotFoundException;
+import by.nc.tarazenko.service.exceptions.GuestNotFoundException;
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,8 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public GuestDTO getById(int id) {
-        Guest guest = guestRepository.findById(id).get();
+        Guest guest = guestRepository.findById(id).orElseThrow(() ->
+                new GuestNotFoundException("There is no such guest."));
         return guestConvector.toDTO(guest);
     }
 
@@ -46,36 +49,26 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
-    public void create(GuestDTO guestDTO) {
-        guestRepository.saveAndFlush(guestConvector.fromDTO(guestDTO));
-    }
-
-    @Override
-    public boolean update(GuestDTO guestDTO) {
+    public GuestDTO create(GuestDTO guestDTO) {
         Guest guest = guestConvector.fromDTO(guestDTO);
-        logger.debug(guest);
-        boolean ok = true;
-        if (guestRepository.findById(guest.getId()).isPresent()) {
-            guestRepository.saveAndFlush(guest);
-            logger.debug("Update guest id = " + guest.getId());
-        } else {
-            logger.debug("Guest not found.");
-            ok = false;
-        }
-        return ok;
+        guest = guestRepository.saveAndFlush(guest);
+        return guestConvector.toDTO(guest);
     }
 
     @Override
-    public boolean deleteById(int guestId) {
-        boolean ok = true;
-        if (guestRepository.findById(guestId).isPresent()) {
-            guestRepository.deleteById(guestId);
-            logger.debug("Found and deleted with id = " + guestId);
-        } else {
-            logger.debug("Guest not found.");
-            ok = false;
-        }
-        return ok;
+    public GuestDTO update(GuestDTO guestDTO) {
+        Guest guest = guestConvector.fromDTO(guestDTO);
+        guest = guestRepository.findById(guest.getId()).orElseThrow(() ->
+                new GuestNotFoundException("There is no such guest."));
+        guest = guestRepository.saveAndFlush(guest);
+        return guestConvector.toDTO(guest);
+    }
+
+    @Override
+    public void deleteById(int guestId) {
+        Guest guest = guestRepository.findById(guestId).orElseThrow(() ->
+                new GuestNotFoundException("There is no such guest."));
+        guestRepository.deleteById(guestId);
     }
 
     @Override
@@ -84,19 +77,14 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
-    public int addAttendance(int guestId, int attendanceId) {
-        Attendance attendance = attendanceRepository.getOne(attendanceId);
-        Guest guest = guestRepository.getOne(guestId);
-        int checker = 1;
-        if (attendance == null) {
-            checker = -1;
-        } else if (guest == null) {
-            checker = 0;
-        } else {
-            guest.getAttendances().add(attendance);
-            guest.setBill(guest.getBill() + attendance.getCost());
-            guestRepository.saveAndFlush(guest);
-        }
-        return checker;
+    public GuestDTO addAttendance(int guestId, int attendanceId) {
+        Attendance attendance = attendanceRepository.findById(attendanceId).orElseThrow(() ->
+                new AttendanceNotFoundException("There is no such attendance."));
+        Guest guest = guestRepository.findById(guestId).orElseThrow(() ->
+                new GuestNotFoundException("There is no such guest."));
+        guest.getAttendances().add(attendance);
+        guest.setBill(guest.getBill() + attendance.getCost());
+        guest = guestRepository.saveAndFlush(guest);
+        return guestConvector.toDTO(guest);
     }
 }

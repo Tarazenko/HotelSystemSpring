@@ -36,8 +36,8 @@ public class GuestController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody GuestDTO guest) {
-        try {
+    public ResponseEntity<GuestDTO> create(@RequestBody GuestDTO guest) {
+       /* try {
             logger.info("Save guest");
             logger.debug("Seve guest = " + guest);
             guestService.create(guest);
@@ -45,13 +45,14 @@ public class GuestController {
         } catch (Exception ex) {
             logger.warn(ex.getStackTrace());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        }*/
+       return ResponseEntity.ok(guestService.create(guest));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@RequestBody GuestDTO guest, @PathVariable int id) {
-        try {
-            guest.setId(id);
+    public ResponseEntity<GuestDTO> update(@RequestBody GuestDTO guest, @PathVariable int id) {
+        /*try {
+
             if (guestService.update(guest)) {
                 return ResponseEntity.ok().build();
             } else {
@@ -60,28 +61,32 @@ public class GuestController {
         } catch (Exception ex) {
             logger.warn(ex.getStackTrace());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        }*/
+        guest.setId(id);
+        return ResponseEntity.ok(guestService.update(guest));
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<GuestDTO> getById(@PathVariable int id) {
-        try {
+       // try {
             return ResponseEntity.ok(guestService.getById(id));
-            //todo don't right check exception
+      /*      //todo don't right check exception
         } catch (Exception e) {
             logger.info("No guest with id " + id);
             return ResponseEntity.notFound().build();
-        }
+        }*/
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable int id) {
-        if (guestService.deleteById(id)) {
+     /*   if (guestService.deleteById(id)) {
             return ResponseEntity.noContent().build();
         } else {
             logger.info("No guest with id " + id);
             return ResponseEntity.notFound().build();
-        }
+        }*/
+        guestService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/{id}/attendances")
@@ -97,19 +102,6 @@ public class GuestController {
     @PostMapping(value = "/{guestId}/attendances/{attendanceId}")
     public ResponseEntity<GuestDTO> setAttendance(@PathVariable int guestId,
                                                   @PathVariable int attendanceId) {
-        try {
-            int checker = guestService.addAttendance(guestId, attendanceId);
-            if (checker == -1) {
-                //todo information message
-                return ResponseEntity.notFound().build();
-            } else if (checker == 0) {
-                return ResponseEntity.notFound().build();
-            } else{
-                return ResponseEntity.ok().build();
-            }
-        } catch (Exception ex) {
-            logger.warn(ex.getStackTrace());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(guestService.addAttendance(guestId,attendanceId));
     }
 }

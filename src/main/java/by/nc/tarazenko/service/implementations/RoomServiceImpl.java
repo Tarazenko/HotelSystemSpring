@@ -5,6 +5,7 @@ import by.nc.tarazenko.dtos.RoomDTO;
 import by.nc.tarazenko.entity.Room;
 import by.nc.tarazenko.repository.RoomRepositoy;
 import by.nc.tarazenko.service.RoomService;
+import by.nc.tarazenko.service.exceptions.RoomNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomDTO getById(int id) {
-        Room room = roomRepositoy.findById(id).get();
-        logger.debug(room.getFeatures());
+        Room room = roomRepositoy.findById(id).orElseThrow(()->
+                new RoomNotFoundException("There is no such room."));
         return roomConvector.toDTO(room);
     }
 
@@ -38,34 +39,25 @@ public class RoomServiceImpl implements RoomService {
         return roomDTOs;
     }
 
-    //todo return created
     @Override
-    public void create(RoomDTO roomDTO) {
+    public RoomDTO create(RoomDTO roomDTO) {
         Room room = roomConvector.fromDTO(roomDTO);
-        roomRepositoy.saveAndFlush(room);
-    }
-
-    //todo return what was update
-    @Override
-    public boolean update(RoomDTO roomDTO) {
-        Room room = roomConvector.fromDTO(roomDTO);
-        boolean ok = true;
-        if (roomRepositoy.findById(room.getId()).isPresent()) {
-            roomRepositoy.saveAndFlush(room);
-        } else {
-            ok = false;
-        }
-        return ok;
+        room = roomRepositoy.saveAndFlush(room);
+        return roomConvector.toDTO(room);
     }
 
     @Override
-    public boolean deleteById(int id) {
-        boolean ok = true;
-        if (roomRepositoy.findById(id).isPresent()) {
-            roomRepositoy.deleteById(id);
-        } else {
-            ok = false;
-        }
-        return ok;
+    public RoomDTO update(RoomDTO roomDTO) {
+        Room room = roomConvector.fromDTO(roomDTO);
+        room = roomRepositoy.findById(room.getId()).orElseThrow(()->
+                new RoomNotFoundException("There is no such room."));
+        return roomConvector.toDTO(room);
+    }
+
+    @Override
+    public void deleteById(int id) {
+        Room room = roomRepositoy.findById(id).orElseThrow(()->
+                new RoomNotFoundException("There is no such room."));
+        roomRepositoy.deleteById(id);
     }
 }

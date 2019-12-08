@@ -3,10 +3,10 @@ package by.nc.tarazenko.service.implementations;
 import by.nc.tarazenko.convector.FeatureConvector;
 import by.nc.tarazenko.dtos.FeatureDTO;
 import by.nc.tarazenko.entity.Feature;
-import by.nc.tarazenko.entity.Room;
 import by.nc.tarazenko.repository.FeatureRepository;
 import by.nc.tarazenko.service.FeatureService;
 import by.nc.tarazenko.service.RoomService;
+import by.nc.tarazenko.service.exceptions.FeatureNotFouundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,8 @@ public class FeatureServiceImpl implements FeatureService {
 
     @Override
     public FeatureDTO getById(int id) {
-        Feature feature = featureRepository.findById(id).get();
+        Feature feature = featureRepository.findById(id).orElseThrow(()->
+                new FeatureNotFouundException("There is no such feature."));
         return featureConvector.toDTO(feature);
     }
 
@@ -41,31 +42,25 @@ public class FeatureServiceImpl implements FeatureService {
     }
 
     @Override
-    public void create(FeatureDTO featureDTO) {
+    public FeatureDTO create(FeatureDTO featureDTO) {
         Feature feature = featureConvector.fromDTO(featureDTO);
-        featureRepository.saveAndFlush(feature);
+        feature = featureRepository.saveAndFlush(feature);
+        return featureConvector.toDTO(feature);
     }
 
     @Override
-    public boolean update(FeatureDTO featureDTO) {
+    public FeatureDTO update(FeatureDTO featureDTO) {
         Feature feature = featureConvector.fromDTO(featureDTO);
-        boolean ok = true;
-        if (featureRepository.findById(feature.getId()).isPresent()) {
-            featureRepository.saveAndFlush(feature);
-        } else {
-            ok = false;
-        }
-        return ok;
+        feature = featureRepository.findById(feature.getId()).orElseThrow(()->
+                new FeatureNotFouundException("There is no such feature."));
+        feature = featureRepository.saveAndFlush(feature);
+        return featureConvector.toDTO(feature);
     }
 
     @Override
-    public boolean deleteById(int id) {
-        boolean ok = true;
-        if (featureRepository.findById(id).isPresent()) {
-            featureRepository.deleteById(id);
-        } else {
-            ok = false;
-        }
-        return ok;
+    public void deleteById(int id) {
+       Feature feature = featureRepository.findById(id).orElseThrow(()->
+                new FeatureNotFouundException("There is no such feature."));
+       featureRepository.deleteById(id);
     }
 }

@@ -10,11 +10,11 @@ public interface Service<T> {
 
     List<T> getAll();
 
-    void create(T entity);
+    T create(T entity);
 
-    boolean update(T entity);
+    T update(T entity);
 
-    boolean deleteById(int entityId);
+    void deleteById(int entityId);
 }
 
 

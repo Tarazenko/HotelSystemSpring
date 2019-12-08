@@ -20,64 +20,28 @@ public class AttendanceController {
 
     @GetMapping
     public ResponseEntity<List<AttendanceDTO>> getAttendances(){
-        try{
-            return ResponseEntity.ok(attendanceService.getAll());
-        } catch (Exception ex) {
-            logger.warn(ex.getStackTrace());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(attendanceService.getAll());
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<AttendanceDTO> getAttendance(@PathVariable int id){
-        try{
-            AttendanceDTO attendance = attendanceService.getById(id);
-            if(attendance == null){
-                return ResponseEntity.notFound().build();
-            }else{
-                return ResponseEntity.ok(attendance);
-            }
-        }catch (Exception ex){
-            logger.warn(ex.getStackTrace());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(attendanceService.getById(id));
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<AttendanceDTO> update(@RequestBody AttendanceDTO attendance, @PathVariable int id) {
-        try {
-            attendance.setId(id);
-            logger.debug(attendance);
-            if (attendanceService.update(attendance)) {
-                return ResponseEntity.ok(attendanceService.getById(id));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception ex) {
-            logger.warn(ex.getStackTrace());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        attendance.setId(id);
+        return  ResponseEntity.ok(attendanceService.update(attendance));
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody AttendanceDTO attendance) {
-        try {
-            logger.debug("Seve attendance = " + attendance);
-            attendanceService.create(attendance);
-            return ResponseEntity.ok().build();
-        } catch (Exception ex) {
-            logger.warn(ex.getStackTrace());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<AttendanceDTO> create(@RequestBody AttendanceDTO attendance) {
+        return ResponseEntity.ok(attendanceService.create(attendance));
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable int id) {
-        if (attendanceService.deleteById(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            logger.info("No guest with id " + id);
-            return ResponseEntity.notFound().build();
-        }
+        attendanceService.deleteById(id);
+        return  ResponseEntity.ok().build();
     }
 }

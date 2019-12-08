@@ -30,18 +30,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void create(User entity) {
-
+    public User create(User entity) {
+        return null;
     }
 
     @Override
-    public boolean update(User entity) {
-        return false;
+    public User update(User entity) {
+        return null;
     }
 
     @Override
-    public boolean deleteById(int entityId) {
-        return false;
+    public void deleteById(int entityId) {
+
     }
 
     @Override

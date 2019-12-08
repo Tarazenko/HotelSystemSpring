@@ -24,19 +24,19 @@ public class FeatureController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody FeatureDTO featureDTO) {
+    public ResponseEntity<FeatureDTO> create(@RequestBody FeatureDTO featureDTO) {
         logger.debug("Seve feature = " + featureDTO);
-        featureService.create(featureDTO);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(featureService.create(featureDTO));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@RequestBody FeatureDTO featureDTO, @PathVariable int id) {
-        featureDTO.setId(id);
+    public ResponseEntity<FeatureDTO> update(@RequestBody FeatureDTO featureDTO, @PathVariable int id) {
+        /*featureDTO.setId(id);
         if (featureService.update(featureDTO))
             return ResponseEntity.ok().build();
         else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();*/
+        return ResponseEntity.ok(featureService.update(featureDTO));
     }
 
     @GetMapping(value = "/{id}")
@@ -46,9 +46,11 @@ public class FeatureController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable int id) {
-        if (featureService.deleteById(id))
+        /*if (featureService.deleteById(id))
             return ResponseEntity.ok().build();
         else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();*/
+        featureService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

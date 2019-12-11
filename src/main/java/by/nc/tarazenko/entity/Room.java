@@ -1,5 +1,6 @@
 package by.nc.tarazenko.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -24,4 +25,17 @@ public class Room {
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "feature_id"))
     private List<Feature> features = new ArrayList<>();
+
+   // @JsonIgnore
+    @OneToMany(mappedBy = "room")
+    private List<Reservation> reservations;
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", number=" + number +
+                ", features=" + features +
+                '}';
+    }
 }

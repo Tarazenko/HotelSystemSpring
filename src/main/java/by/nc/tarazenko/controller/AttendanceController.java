@@ -31,6 +31,7 @@ public class AttendanceController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<AttendanceDTO> update(@RequestBody AttendanceDTO attendance, @PathVariable int id) {
         attendance.setId(id);
+        logger.debug(attendance);
         return  ResponseEntity.ok(attendanceService.update(attendance));
     }
 

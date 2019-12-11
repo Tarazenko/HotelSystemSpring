@@ -19,7 +19,7 @@ public class Attendance {
     private String name;
 
     @Column(name = "cost")
-    private double cost;
+    private Double cost;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "attendances", fetch = FetchType.LAZY)
@@ -28,7 +28,7 @@ public class Attendance {
     public Attendance() {
     }
 
-    public Attendance(int id, String name, double cost, List<Guest> guests) {
+    public Attendance(int id, String name, Double cost, List<Guest> guests) {
         this.id = id;
         this.name = name;
         this.cost = cost;
@@ -51,11 +51,11 @@ public class Attendance {
         this.name = name;
     }
 
-    public double getCost() {
+    public Double getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(Double cost) {
         this.cost = cost;
     }
 

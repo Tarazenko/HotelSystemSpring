@@ -32,4 +32,19 @@ public class Guest {
             joinColumns = @JoinColumn(name = "guestId"),
             inverseJoinColumns = @JoinColumn(name = "attendance_id"))
     List<Attendance> attendances = new ArrayList<>();
+
+   // @JsonIgnore
+    @OneToMany(mappedBy = "guest")
+    private List<Reservation> reservations;
+
+    @Override
+    public String toString() {
+        return "Guest{" +
+                "id=" + id +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", bill=" + bill +
+                ", passport=" + passport +
+                ", attendances=" + attendances +
+                '}';
+    }
 }

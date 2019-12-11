@@ -58,7 +58,7 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public GuestDTO update(GuestDTO guestDTO) {
         Guest guest = guestConvector.fromDTO(guestDTO);
-        guest = guestRepository.findById(guest.getId()).orElseThrow(() ->
+        guestRepository.findById(guest.getId()).orElseThrow(() ->
                 new GuestNotFoundException("There is no such guest."));
         guest = guestRepository.saveAndFlush(guest);
         return guestConvector.toDTO(guest);
@@ -73,6 +73,8 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public List<Attendance> getAttendances(int guestId) {
+        guestRepository.findById(guestId).orElseThrow(() ->
+                new GuestNotFoundException("There is no such guest."));
         return guestRepository.findById(guestId).get().getAttendances();
     }
 

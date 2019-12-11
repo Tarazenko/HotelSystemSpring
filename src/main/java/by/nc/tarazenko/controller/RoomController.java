@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,8 +22,14 @@ public class RoomController {
     RoomService roomService;
 
     @GetMapping
-    public ResponseEntity<List<RoomDTO>> getAll() {
-        return ResponseEntity.ok(roomService.getAll());
+    public ResponseEntity<List<RoomDTO>> getAll(@RequestParam (required = false)String checkin,
+                                                @RequestParam (required = false)String checkout) {
+        LocalDate checkinDate = (checkin == null)? null: LocalDate.parse(checkin);
+        LocalDate checkoutDate = (checkout == null)? null:LocalDate.parse(checkout);
+        if(checkinDate == null && checkoutDate == null)
+            return ResponseEntity.ok(roomService.getAll());
+        else
+            return ResponseEntity.ok(roomService.getFree(checkinDate,checkoutDate));
     }
 
     @PostMapping

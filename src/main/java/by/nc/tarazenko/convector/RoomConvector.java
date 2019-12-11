@@ -13,6 +13,7 @@ public class RoomConvector implements Convector<RoomDTO, Room> {
         RoomDTO roomDTO = new RoomDTO();
         roomDTO.setId(room.getId());
         roomDTO.setFeatures(room.getFeatures());
+        roomDTO.setNumber(room.getNumber());
         double cost = 0;
         for(Feature feature: room.getFeatures()){
             cost += feature.getCost();

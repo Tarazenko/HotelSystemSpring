@@ -51,7 +51,7 @@ public class FeatureServiceImpl implements FeatureService {
     @Override
     public FeatureDTO update(FeatureDTO featureDTO) {
         Feature feature = featureConvector.fromDTO(featureDTO);
-        feature = featureRepository.findById(feature.getId()).orElseThrow(()->
+        featureRepository.findById(feature.getId()).orElseThrow(()->
                 new FeatureNotFouundException("There is no such feature."));
         feature = featureRepository.saveAndFlush(feature);
         return featureConvector.toDTO(feature);

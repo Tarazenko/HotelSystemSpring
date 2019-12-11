@@ -49,7 +49,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public AttendanceDTO update(AttendanceDTO attendanceDTO) {
         Attendance attendance = attendanceConvector.fromDTO(attendanceDTO);
-        attendance = attendanceRepository.findById(attendance.getId()).orElseThrow(()->
+        attendanceRepository.findById(attendance.getId()).orElseThrow(()->
                 new AttendanceNotFoundException("There is no such attendance."));
         attendance = attendanceRepository.saveAndFlush(attendance);
         return attendanceConvector.toDTO(attendance);

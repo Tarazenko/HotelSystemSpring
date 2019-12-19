@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    final
+    private final
     UserServiceImpl userService;
 
     @Autowired
@@ -30,33 +30,40 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.httpBasic().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/guests").hasRole("USER")
+                .antMatchers(HttpMethod.POST,"/guests/{guestId}/attendances/{attendanceId}").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/guests").hasRole("USER")
-                .antMatchers(HttpMethod.PUT, "/guests").hasRole("USER")
-                .antMatchers(HttpMethod.DELETE, "/guests/{id}").hasRole("ADMIN");
-               /* .and()
-                .authorizeRequests()
-
-
-                .antMatchers(HttpMethod.GET, "/attendances").permitAll()
-                .antMatchers(HttpMethod.POST, "/attendances").permitAll()
-                .and().csrf().disable();*/
-        /* http.httpBasic().and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/guests").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/guests").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/guests").permitAll()
+                .antMatchers(HttpMethod.GET, "/guests/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/guests/{id}/attendances").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/guests/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/guests/{id}").hasRole("ADMIN")
                 .and()
                 .authorizeRequests()
-               // .antMatchers("/tickets").hasRole("USER")
-
-                .antMatchers(HttpMethod.GET, "/attendances").permitAll()
-                .antMatchers(HttpMethod.POST, "/attendances").permitAll();*/
-
-
-
-                //.antMatchers("/registration").permitAll();
-
-       // http.csrf().disable();
+                .antMatchers(HttpMethod.GET, "/attendances").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/attendances/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/attendances").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/attendances/{id}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/attendances/{id}").hasRole("ADMIN")
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/features").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/features/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/features").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/features/{id}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/features/{id}").hasRole("ADMIN")
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/rooms").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/rooms/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/rooms").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/rooms/{id}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/rooms/{id}").hasRole("ADMIN")
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/reservations").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/reservations/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/reservations").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/reservations/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/reservations/{id}").hasRole("USER");
     }
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

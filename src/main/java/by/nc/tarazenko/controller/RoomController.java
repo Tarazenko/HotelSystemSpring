@@ -1,13 +1,10 @@
 package by.nc.tarazenko.controller;
 
-import by.nc.tarazenko.dtos.GuestDTO;
 import by.nc.tarazenko.dtos.RoomDTO;
 import by.nc.tarazenko.service.RoomService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -20,8 +17,12 @@ public class RoomController {
 
     private Logger logger = Logger.getLogger(RoomController.class);
 
+    private final RoomService roomService;
+
     @Autowired
-    RoomService roomService;
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
+    }
 
     @GetMapping
     public ResponseEntity<List<RoomDTO>> getAll(@RequestParam (required = false)String checkin,

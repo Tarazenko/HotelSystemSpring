@@ -1,7 +1,6 @@
 package by.nc.tarazenko.controller;
+
 import by.nc.tarazenko.dtos.ReservationDTO;
-import by.nc.tarazenko.entity.Reservation;
-import by.nc.tarazenko.repository.ReservationRepository;
 import by.nc.tarazenko.service.ReservationService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,12 @@ import java.util.List;
 public class ReservationController {
     private Logger logger = Logger.getLogger(ReservationController.class);
 
+    private final ReservationService reservationService;
+
     @Autowired
-    private ReservationService reservationService;
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReservationDTO> getById(@PathVariable int id) {

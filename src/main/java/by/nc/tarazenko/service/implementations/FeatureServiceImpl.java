@@ -19,10 +19,14 @@ public class FeatureServiceImpl implements FeatureService {
 
     private Logger logger = Logger.getLogger(RoomService.class);
 
-    @Autowired
-    FeatureRepository featureRepository;
+    private final FeatureRepository featureRepository;
 
     private FeatureConvector featureConvector = new FeatureConvector();
+
+    @Autowired
+    public FeatureServiceImpl(FeatureRepository featureRepository) {
+        this.featureRepository = featureRepository;
+    }
 
     @Override
     public FeatureDTO getById(int id) {

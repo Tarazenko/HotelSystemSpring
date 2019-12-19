@@ -14,8 +14,12 @@ import java.util.List;
 public class FeatureController {
     private Logger logger = Logger.getLogger(RoomController.class);
 
+    private final FeatureService featureService;
+
     @Autowired
-    FeatureService featureService;
+    public FeatureController(FeatureService featureService) {
+        this.featureService = featureService;
+    }
 
     @GetMapping
     public ResponseEntity<List<FeatureDTO>> getAll() {
@@ -27,14 +31,8 @@ public class FeatureController {
         logger.debug("Seve feature = " + featureDTO);
         return ResponseEntity.ok(featureService.create(featureDTO));
     }
-
     @PutMapping(value = "/{id}")
     public ResponseEntity<FeatureDTO> update(@RequestBody FeatureDTO featureDTO, @PathVariable int id) {
-        /*featureDTO.setId(id);
-        if (featureService.update(featureDTO))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();*/
         return ResponseEntity.ok(featureService.update(featureDTO));
     }
 
@@ -45,10 +43,6 @@ public class FeatureController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable int id) {
-        /*if (featureService.deleteById(id))
-            return ResponseEntity.ok().build();
-        else
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();*/
         featureService.deleteById(id);
         return ResponseEntity.ok().build();
     }

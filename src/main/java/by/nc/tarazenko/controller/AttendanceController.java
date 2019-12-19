@@ -4,7 +4,6 @@ import by.nc.tarazenko.dtos.AttendanceDTO;
 import by.nc.tarazenko.service.AttendanceService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +14,12 @@ import java.util.List;
 public class AttendanceController {
     private Logger logger = Logger.getLogger(GuestController.class);
 
+    private final AttendanceService attendanceService;
+
     @Autowired
-    AttendanceService attendanceService;
+    public AttendanceController(AttendanceService attendanceService) {
+        this.attendanceService = attendanceService;
+    }
 
     @GetMapping
     public ResponseEntity<List<AttendanceDTO>> getAttendances(){

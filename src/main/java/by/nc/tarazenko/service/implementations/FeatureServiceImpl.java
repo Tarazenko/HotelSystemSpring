@@ -6,7 +6,8 @@ import by.nc.tarazenko.entity.Feature;
 import by.nc.tarazenko.repository.FeatureRepository;
 import by.nc.tarazenko.service.FeatureService;
 import by.nc.tarazenko.service.RoomService;
-import by.nc.tarazenko.service.exceptions.FeatureNotFouundException;
+import by.nc.tarazenko.service.exceptions.FeatureAlreadyExistException;
+import by.nc.tarazenko.service.exceptions.FeatureNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class FeatureServiceImpl implements FeatureService {
     @Override
     public FeatureDTO getById(int id) {
         Feature feature = featureRepository.findById(id).orElseThrow(()->
-                new FeatureNotFouundException("There is no such feature."));
+                new FeatureNotFoundException("There is no such feature."));
         return featureConvector.toDTO(feature);
     }
 
@@ -48,6 +49,9 @@ public class FeatureServiceImpl implements FeatureService {
     @Override
     public FeatureDTO create(FeatureDTO featureDTO) {
         Feature feature = featureConvector.fromDTO(featureDTO);
+        if(featureRepository.getFeatureByName(feature.getName()) != null){
+            throw new FeatureAlreadyExistException("Feature with such name already exist.");
+        }
         feature = featureRepository.saveAndFlush(feature);
         return featureConvector.toDTO(feature);
     }
@@ -56,7 +60,7 @@ public class FeatureServiceImpl implements FeatureService {
     public FeatureDTO update(FeatureDTO featureDTO) {
         Feature feature = featureConvector.fromDTO(featureDTO);
         featureRepository.findById(feature.getId()).orElseThrow(()->
-                new FeatureNotFouundException("There is no such feature."));
+                new FeatureNotFoundException("There is no such feature."));
         feature = featureRepository.saveAndFlush(feature);
         return featureConvector.toDTO(feature);
     }
@@ -64,7 +68,7 @@ public class FeatureServiceImpl implements FeatureService {
     @Override
     public void deleteById(int id) {
        Feature feature = featureRepository.findById(id).orElseThrow(()->
-                new FeatureNotFouundException("There is no such feature."));
+                new FeatureNotFoundException("There is no such feature."));
        featureRepository.deleteById(id);
     }
 }

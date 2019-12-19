@@ -2,19 +2,31 @@ package by.nc.tarazenko.security;
 
 import by.nc.tarazenko.service.implementations.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    private static final String[] AUTH_WHITELIST = {
+
+            // -- swagger ui
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**"
+    };
 
     private final
     UserServiceImpl userService;
@@ -62,8 +74,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/reservations/{id}").hasRole("USER")
                 .antMatchers(HttpMethod.POST, "/reservations").hasRole("USER")
                 .antMatchers(HttpMethod.PUT, "/reservations/{id}").hasRole("USER")
-                .antMatchers(HttpMethod.DELETE, "/reservations/{id}").hasRole("USER");
+                .antMatchers(HttpMethod.DELETE, "/reservations/{id}").hasRole("USER")
+                .and()
+                .authorizeRequests()
+                .antMatchers(AUTH_WHITELIST).permitAll();
+               // .antMatchers("/**/*").denyAll();
     }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .antMatchers(
+                        "/webjars/**", "/v2/api-docs/**", "/configuration/ui/**", "/swagger-resources/**",
+                        "/configuration/security/**", "/swagger-ui.html/**", "/swagger-ui.html#/**");
+    }
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 

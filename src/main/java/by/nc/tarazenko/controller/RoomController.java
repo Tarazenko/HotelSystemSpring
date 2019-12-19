@@ -2,6 +2,10 @@ package by.nc.tarazenko.controller;
 
 import by.nc.tarazenko.dtos.RoomDTO;
 import by.nc.tarazenko.service.RoomService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("rooms")
+@Api
 public class RoomController {
 
     private Logger logger = Logger.getLogger(RoomController.class);
@@ -25,6 +30,7 @@ public class RoomController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Все комнаты")
     public ResponseEntity<List<RoomDTO>> getAll(@RequestParam (required = false)String checkin,
                                                 @RequestParam (required = false)String checkout) {
         LocalDate checkinDate = (checkin == null)? null: LocalDate.parse(checkin);

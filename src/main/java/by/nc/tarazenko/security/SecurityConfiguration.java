@@ -16,17 +16,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    final
     UserServiceImpl userService;
+
+    @Autowired
+    public SecurityConfiguration(UserServiceImpl userService) {
+        this.userService = userService;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //System.out.println("zashel");
         http.httpBasic().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/guests").hasRole("ADMIN");
-               /* .antMatchers(HttpMethod.GET, "/guests").hasRole("ROlE_ADMIN")
-                .antMatchers(HttpMethod.PUT, "/guests").permitAll()
-                .and()
+                .antMatchers(HttpMethod.POST,"/guests").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/guests").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/guests").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/guests/{id}").hasRole("ADMIN");
+               /* .and()
                 .authorizeRequests()
 
 

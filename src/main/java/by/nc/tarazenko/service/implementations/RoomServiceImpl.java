@@ -5,7 +5,7 @@ import by.nc.tarazenko.dtos.RoomDTO;
 import by.nc.tarazenko.entity.Reservation;
 import by.nc.tarazenko.entity.Room;
 import by.nc.tarazenko.repository.ReservationRepository;
-import by.nc.tarazenko.repository.RoomRepositoy;
+import by.nc.tarazenko.repository.RoomRepository;
 import by.nc.tarazenko.service.RoomService;
 import by.nc.tarazenko.service.exceptions.InvalidOrderException;
 import by.nc.tarazenko.service.exceptions.RoomAlreadyExistException;
@@ -23,7 +23,7 @@ public class RoomServiceImpl implements RoomService {
     private Logger logger = Logger.getLogger(RoomServiceImpl.class);
 
     @Autowired
-    RoomRepositoy roomRepositoy;
+    RoomRepository roomRepository;
 
     @Autowired
     ReservationRepository reservationRepository;
@@ -32,14 +32,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomDTO getById(int id) {
-        Room room = roomRepositoy.findById(id).orElseThrow(() ->
+        Room room = roomRepository.findById(id).orElseThrow(() ->
                 new RoomNotFoundException("There is no such room."));
         return roomConvector.toDTO(room);
     }
 
     @Override
     public List<RoomDTO> getAll() {
-        List<Room> rooms = roomRepositoy.findAll();
+        List<Room> rooms = roomRepository.findAll();
         List<RoomDTO> roomDTOs = new ArrayList<>();
         for (Room room : rooms) {
             roomDTOs.add(roomConvector.toDTO(room));
@@ -50,34 +50,32 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDTO create(RoomDTO roomDTO) {
         Room room = roomConvector.fromDTO(roomDTO);
-        if(roomRepositoy.getRoomByNumber(room.getNumber()) != null){
+        if(roomRepository.getRoomByNumber(room.getNumber()) != null){
             throw new RoomAlreadyExistException("Room with such number already exist.");
         }
-        room = roomRepositoy.saveAndFlush(room);
+        room = roomRepository.saveAndFlush(room);
         return roomConvector.toDTO(room);
     }
 
     @Override
     public RoomDTO update(RoomDTO roomDTO) {
         Room room = roomConvector.fromDTO(roomDTO);
-        roomRepositoy.findById(room.getId()).orElseThrow(() ->
+        roomRepository.findById(room.getId()).orElseThrow(() ->
                 new RoomNotFoundException("There is no such room."));
-        if(roomRepositoy.getRoomByNumber(room.getNumber()) != null){
-            throw new RoomAlreadyExistException("Room with such number already exist.");
-        }
+        room = roomRepository.saveAndFlush(room);
         return roomConvector.toDTO(room);
     }
 
     @Override
     public void deleteById(int id) {
-        Room room = roomRepositoy.findById(id).orElseThrow(() ->
+        Room room = roomRepository.findById(id).orElseThrow(() ->
                 new RoomNotFoundException("There is no such room."));
-        roomRepositoy.deleteById(id);
+        roomRepository.deleteById(id);
     }
 
-    boolean isBook(Room room, LocalDate checkin, LocalDate checkout) {
+    public boolean isBook(Room room, LocalDate checkin, LocalDate checkout) {
         List<Reservation> reservations = reservationRepository.getReservationByRoom(room);
-        boolean isFree = false;
+        boolean isBook = false;
         for (Reservation reservation : reservations) {
             logger.debug(reservation);
             if ((reservation.getCheckOutDate().isAfter(checkin) &&
@@ -86,22 +84,24 @@ public class RoomServiceImpl implements RoomService {
                             reservation.getCheckOutDate().isBefore(checkout)) ||
                     (reservation.getCheckInDate().isBefore(checkout) &&
                             reservation.getCheckOutDate().isAfter(checkout))) {
-                isFree = true;
+                isBook = true;
                 break;
             }
         }
-        return isFree;
+        logger.debug(isBook);
+        return isBook;
     }
 
     @Override
     public List<RoomDTO> getFree(LocalDate checkin, LocalDate checkout) {
         if (checkin.isAfter(checkout))
             throw new InvalidOrderException("Checkin date should be before checkout.");
-        List<Room> rooms = roomRepositoy.findAll();
+        List<Room> rooms = roomRepository.findAll();
         List<RoomDTO> freeRooms = new ArrayList<>();
         for (Room room : rooms) {
-            if (!isBook(room,checkin,checkout))
+            if (!isBook(room,checkin,checkout)) {
                 freeRooms.add(roomConvector.toDTO(room));
+            }
         }
         return freeRooms;
     }

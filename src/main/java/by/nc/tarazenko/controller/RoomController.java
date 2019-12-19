@@ -7,8 +7,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,13 +35,13 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<RoomDTO> create(@RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<RoomDTO> create(@Valid @RequestBody RoomDTO roomDTO) {
         logger.debug("Seve room = " + roomDTO);
         return ResponseEntity.ok(roomService.create(roomDTO));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<RoomDTO> update(@RequestBody RoomDTO roomDTO, @PathVariable int id) {
+    public ResponseEntity<RoomDTO> update(@Valid @RequestBody RoomDTO roomDTO, @PathVariable int id) {
        roomDTO.setId(id);
        return ResponseEntity.ok(roomService.update(roomDTO));
     }

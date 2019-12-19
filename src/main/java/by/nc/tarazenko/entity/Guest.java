@@ -1,11 +1,11 @@
 package by.nc.tarazenko.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.Getter;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -16,7 +16,7 @@ public class Guest {
     @Column(name = "guestId")
     private int id;
 
-    @Column(name = "phone", nullable = true)
+    @Column(name = "phone")
     private String phoneNumber;
 
     @Column(name = "bill")
@@ -33,9 +33,24 @@ public class Guest {
             inverseJoinColumns = @JoinColumn(name = "attendance_id"))
     List<Attendance> attendances = new ArrayList<>();
 
-   // @JsonIgnore
     @OneToMany(mappedBy = "guest")
     private List<Reservation> reservations;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Guest guest = (Guest) o;
+        return id == guest.id &&
+                Double.compare(guest.bill, bill) == 0 &&
+                Objects.equals(phoneNumber, guest.phoneNumber) &&
+                Objects.equals(passport, guest.passport);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, phoneNumber, bill, passport);
+    }
 
     @Override
     public String toString() {

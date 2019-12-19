@@ -8,7 +8,7 @@ import by.nc.tarazenko.entity.Reservation;
 import by.nc.tarazenko.entity.Room;
 import by.nc.tarazenko.repository.GuestRepository;
 import by.nc.tarazenko.repository.ReservationRepository;
-import by.nc.tarazenko.repository.RoomRepositoy;
+import by.nc.tarazenko.repository.RoomRepository;
 import by.nc.tarazenko.service.ReservationService;
 import by.nc.tarazenko.service.exceptions.GuestNotFoundException;
 import by.nc.tarazenko.service.exceptions.ReservationNotFoundException;
@@ -34,7 +34,7 @@ public class ReservationServiceImpl implements ReservationService {
     ReservationRepository reservationRepository;
 
     @Autowired
-    RoomRepositoy roomRepositoy;
+    RoomRepository roomRepository;
 
     @Autowired
     GuestRepository guestRepository;
@@ -67,7 +67,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationConvecter.fromDTO(reservationDTO);
         Guest guest = guestRepository.findById(reservation.getGuest().getId()).orElseThrow(() ->
                 new GuestNotFoundException("There is no such guest."));
-        Room room = roomRepositoy.findById(reservation.getRoom().getId()).orElseThrow(() ->
+        Room room = roomRepository.findById(reservation.getRoom().getId()).orElseThrow(() ->
                 new RoomNotFoundException("There is no such room."));
         if(roomService.isBook(room, reservation.getCheckInDate(),reservation.getCheckOutDate()))
             throw new RoomAlreadyBookException("Room is already book.");

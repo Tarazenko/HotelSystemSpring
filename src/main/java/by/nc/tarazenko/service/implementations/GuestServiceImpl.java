@@ -9,6 +9,7 @@ import by.nc.tarazenko.repository.GuestRepository;
 import by.nc.tarazenko.service.GuestService;
 
 import by.nc.tarazenko.service.exceptions.AttendanceNotFoundException;
+import by.nc.tarazenko.service.exceptions.GuestAlreadyExistException;
 import by.nc.tarazenko.service.exceptions.GuestNotFoundException;
 import org.apache.log4j.Logger;
 
@@ -20,15 +21,19 @@ import java.util.List;
 
 @Service
 public class GuestServiceImpl implements GuestService {
-    final static Logger logger = Logger.getLogger(GuestServiceImpl.class);
+    private final static Logger logger = Logger.getLogger(GuestServiceImpl.class);
 
-    @Autowired
-    private AttendanceRepository attendanceRepository;
+    private final AttendanceRepository attendanceRepository;
 
-    @Autowired
-    private GuestRepository guestRepository;
+    private final GuestRepository guestRepository;
 
     private GuestConvector guestConvector = new GuestConvector();
+
+    @Autowired
+    public GuestServiceImpl(AttendanceRepository attendanceRepository, GuestRepository guestRepository) {
+        this.attendanceRepository = attendanceRepository;
+        this.guestRepository = guestRepository;
+    }
 
     @Override
     public GuestDTO getById(int id) {
@@ -51,6 +56,10 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public GuestDTO create(GuestDTO guestDTO) {
         Guest guest = guestConvector.fromDTO(guestDTO);
+        if (guestRepository.getGuestByPhoneNumber(guest.getPhoneNumber()) != null) {
+            logger.info("Guest already exist.");
+            throw new GuestAlreadyExistException("Guest with such number already exist.");
+        }
         guest = guestRepository.saveAndFlush(guest);
         return guestConvector.toDTO(guest);
     }

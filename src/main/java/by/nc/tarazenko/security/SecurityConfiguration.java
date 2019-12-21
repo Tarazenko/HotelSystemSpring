@@ -20,8 +20,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
-
-            // -- swagger ui
             "/swagger-resources/**",
             "/swagger-ui.html",
             "/v2/api-docs",
@@ -77,8 +75,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/reservations/{id}").hasRole("USER")
                 .and()
                 .authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll();
-               // .antMatchers("/**/*").denyAll();
+                .antMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/users/{id}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/users").permitAll()
+                .antMatchers(HttpMethod.PUT, "/users/{id}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/users/{id}").hasRole("ADMIN")
+                .and()
+                .authorizeRequests()
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .deleteCookies("auth_code", "JSESSIONID")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .permitAll();
+
     }
 
     @Override
@@ -91,9 +103,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
+        //PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         auth.userDetailsService(userService);
     }
 }

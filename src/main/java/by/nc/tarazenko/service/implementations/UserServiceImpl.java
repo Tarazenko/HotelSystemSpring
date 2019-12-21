@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void deleteById(int id) {
-        User user = userRepository.findById(id).orElseThrow(()->
+        userRepository.findById(id).orElseThrow(()->
                 new UserNotFoundException("There is no user with such id."));
         userRepository.deleteById(id);
     }

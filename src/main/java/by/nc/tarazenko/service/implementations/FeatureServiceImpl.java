@@ -5,20 +5,18 @@ import by.nc.tarazenko.dtos.FeatureDTO;
 import by.nc.tarazenko.entity.Feature;
 import by.nc.tarazenko.repository.FeatureRepository;
 import by.nc.tarazenko.service.FeatureService;
-import by.nc.tarazenko.service.RoomService;
 import by.nc.tarazenko.service.exceptions.FeatureAlreadyExistException;
 import by.nc.tarazenko.service.exceptions.FeatureNotFoundException;
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class FeatureServiceImpl implements FeatureService {
-
-    private Logger logger = Logger.getLogger(RoomService.class);
 
     private final FeatureRepository featureRepository;
 
@@ -31,44 +29,56 @@ public class FeatureServiceImpl implements FeatureService {
 
     @Override
     public FeatureDTO getById(int id) {
-        Feature feature = featureRepository.findById(id).orElseThrow(()->
-                new FeatureNotFoundException("There is no such feature."));
+        log.debug("Getting feature(id - {})", id);
+        Feature feature = featureRepository.findById(id).orElseThrow(() ->
+                new FeatureNotFoundException(String.format("There is no feature with id - %d", id)));
+        log.debug("Returning feature {}", feature);
         return featureConvector.toDTO(feature);
     }
 
     @Override
     public List<FeatureDTO> getAll() {
+        log.debug("Getting all features");
         List<Feature> features = featureRepository.findAll();
         List<FeatureDTO> featureDTOs = new ArrayList<>();
         for (Feature feature : features) {
             featureDTOs.add(featureConvector.toDTO(feature));
         }
+        log.debug("Returning - {}", features);
         return featureDTOs;
     }
 
     @Override
     public FeatureDTO create(FeatureDTO featureDTO) {
+        log.debug("Creating {}", featureDTO);
         Feature feature = featureConvector.fromDTO(featureDTO);
-        if(featureRepository.getFeatureByName(feature.getName()) != null){
-            throw new FeatureAlreadyExistException("Feature with such name already exist.");
+        if (featureRepository.getFeatureByName(feature.getName()) != null) {
+            throw new FeatureAlreadyExistException(String.format("Feature with name - %s - already exist.",
+                    feature.getName()));
         }
         feature = featureRepository.saveAndFlush(feature);
+        log.debug("Created {}", feature);
         return featureConvector.toDTO(feature);
     }
 
     @Override
     public FeatureDTO update(FeatureDTO featureDTO) {
+        log.debug("Updating {}", featureDTO);
         Feature feature = featureConvector.fromDTO(featureDTO);
-        featureRepository.findById(feature.getId()).orElseThrow(()->
-                new FeatureNotFoundException("There is no such feature."));
+        int id = feature.getId();
+        featureRepository.findById(feature.getId()).orElseThrow(() ->
+                new FeatureNotFoundException(String.format("There is no feature with id - %d.", id)));
         feature = featureRepository.saveAndFlush(feature);
+        log.debug("Update {}", feature);
         return featureConvector.toDTO(feature);
     }
 
     @Override
     public void deleteById(int id) {
-       Feature feature = featureRepository.findById(id).orElseThrow(()->
-                new FeatureNotFoundException("There is no such feature."));
-       featureRepository.deleteById(id);
+        log.debug("Deleting feature id - ", id);
+        featureRepository.findById(id).orElseThrow(() ->
+                new FeatureNotFoundException(String.format("There is no feature with id - %d.", id)));
+        featureRepository.deleteById(id);
+        log.debug("Deleted feature id - {}", id);
     }
 }

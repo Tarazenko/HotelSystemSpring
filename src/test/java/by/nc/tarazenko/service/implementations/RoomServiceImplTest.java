@@ -39,10 +39,10 @@ public class RoomServiceImplTest {
     private Reservation reservation;
     private List<Reservation> reservations;
 
-    RoomConvector roomConvector = new RoomConvector();
+    private RoomConvector roomConvector = new RoomConvector();
 
     @InjectMocks
-    RoomService roomService = new RoomServiceImpl();
+    RoomServiceImpl roomService;
 
     @Before
     public void init() {
@@ -101,7 +101,7 @@ public class RoomServiceImplTest {
     public void createExceptionAlreadyExist() {
         doReturn(room).when(roomRepository).getRoomByNumber(anyInt());
         RoomDTO roomDTOexpect = roomConvector.toDTO(room);
-        RoomDTO roomDTO = roomService.create(roomDTOexpect);
+        roomService.create(roomDTOexpect);
     }
 
     @Test

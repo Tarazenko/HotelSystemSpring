@@ -1,5 +1,6 @@
 package by.nc.tarazenko.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

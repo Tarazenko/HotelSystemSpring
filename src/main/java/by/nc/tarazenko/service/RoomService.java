@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface RoomService extends Service<RoomDTO> {
     List<RoomDTO> getFree(LocalDate checkin, LocalDate checkout);
+    RoomDTO addFeature(int roomId, int featureId);
 }

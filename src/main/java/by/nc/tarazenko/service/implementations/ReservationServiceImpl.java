@@ -14,10 +14,8 @@ import by.nc.tarazenko.service.exceptions.GuestNotFoundException;
 import by.nc.tarazenko.service.exceptions.ReservationNotFoundException;
 import by.nc.tarazenko.service.exceptions.RoomAlreadyBookException;
 import by.nc.tarazenko.service.exceptions.RoomNotFoundException;
-import org.apache.log4j.Logger;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
@@ -25,72 +23,90 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Slf4j
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-    private Logger logger = Logger.getLogger(ReservationServiceImpl.class);
+    private final ReservationRepository reservationRepository;
 
-    @Autowired
-    ReservationRepository reservationRepository;
+    private final RoomRepository roomRepository;
 
-    @Autowired
-    RoomRepository roomRepository;
+    private final GuestRepository guestRepository;
 
-    @Autowired
-    GuestRepository guestRepository;
-
-    @Autowired
-    RoomServiceImpl roomService;
+    private final RoomServiceImpl roomService;
 
     private ReservationConvecter reservationConvecter = new ReservationConvecter();
+
     private RoomConvector roomConvector = new RoomConvector();
+
+    @Autowired
+    public ReservationServiceImpl(ReservationRepository reservationRepository, RoomRepository roomRepository, GuestRepository guestRepository, RoomServiceImpl roomService) {
+        this.reservationRepository = reservationRepository;
+        this.roomRepository = roomRepository;
+        this.guestRepository = guestRepository;
+        this.roomService = roomService;
+    }
 
     @Override
     public ReservationDTO getById(int id) {
+        log.debug("Getting reservation(id - {})", id);
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->
-                new ReservationNotFoundException("There is no such reservation."));
+                new ReservationNotFoundException(String.format("There is no reservation with id - %d", id)));
+        log.debug("Returning reservation {}", reservation);
         return reservationConvecter.toDTO(reservation);
     }
 
     @Override
     public List<ReservationDTO> getAll() {
+        log.debug("Getting all reservations");
         List<Reservation> reservations = reservationRepository.findAll();
         List<ReservationDTO> reservationDTOs = new ArrayList<>();
         for (Reservation reservation : reservations) {
             reservationDTOs.add(reservationConvecter.toDTO(reservation));
         }
+        log.debug("Returning - {}", reservations);
         return reservationDTOs;
     }
 
     @Override
     public ReservationDTO create(ReservationDTO reservationDTO) {
+        log.debug("Creating {}", reservationDTO);
         Reservation reservation = reservationConvecter.fromDTO(reservationDTO);
+        int guestId = reservation.getGuest().getId();
+        int roomId = reservation.getRoom().getId();
         Guest guest = guestRepository.findById(reservation.getGuest().getId()).orElseThrow(() ->
-                new GuestNotFoundException("There is no such guest."));
+                new GuestNotFoundException(String.format("There is no guest with id - %d", guestId)));
         Room room = roomRepository.findById(reservation.getRoom().getId()).orElseThrow(() ->
-                new RoomNotFoundException("There is no such room."));
-        if(roomService.isBook(room, reservation.getCheckInDate(),reservation.getCheckOutDate()))
-            throw new RoomAlreadyBookException("Room is already book.");
-        guest.setBill(guest.getBill() + roomConvector.toDTO(room).getCost()*
+                new RoomNotFoundException(String.format("There is no room with id - %d", roomId)));
+        if (roomService.isBook(room, reservation.getCheckInDate(), reservation.getCheckOutDate()))
+            throw new RoomAlreadyBookException(String.format("Room(id - %d) is already book", roomId));
+        guest.setBill(guest.getBill() + roomConvector.toDTO(room).getCost() *
                 reservation.getCheckInDate().until(
                         reservation.getCheckOutDate(), ChronoUnit.DAYS));
         reservation = reservationRepository.saveAndFlush(reservation);
+        log.debug("Created {}", reservation);
         return reservationConvecter.toDTO(reservation);
     }
 
     @Override
     public ReservationDTO update(ReservationDTO reservationDTO) {
+        log.debug("Updating {}", reservationDTO);
         Reservation reservation = reservationConvecter.fromDTO(reservationDTO);
+        int reservationId = reservation.getId();
         reservationRepository.findById(reservation.getId()).orElseThrow(() ->
-                new ReservationNotFoundException("There is no such reservation."));
+                new ReservationNotFoundException(String.format("There is no reservation with id - %d",
+                        reservationId)));
         reservation = reservationRepository.saveAndFlush(reservation);
+        log.debug("Update {}", reservation);
         return reservationConvecter.toDTO(reservation);
     }
 
     @Override
     public void deleteById(int id) {
+        log.debug("Deleting reservation id - ", id);
         reservationRepository.findById(id).orElseThrow(() ->
-                new ReservationNotFoundException("There is no such reservation."));
+                new ReservationNotFoundException(String.format("There is no reservation with id - %d", id)));
         reservationRepository.deleteById(id);
+        log.debug("Deleted reservation id - {}", id);
     }
 }

@@ -20,6 +20,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -28,33 +29,33 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
     @ExceptionHandler(EntityNotFoundException.class)
     protected ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
-        log.warn(ex.getClass().getName(), ex);
+        log.warn("Not found exception stack: {} ", Arrays.toString(ex.getStackTrace()));
         ErrorDTO errorDTO = new ErrorDTO(HttpStatus.NOT_FOUND, ex.getClass().getName(), ex.getMessage());
         return new ResponseEntity<>(errorDTO, new HttpHeaders(), errorDTO.getHttpStatus());
     }
     @ExceptionHandler(EntityExistException.class)
-    protected ResponseEntity<Object> handleEntityNotFound(EntityExistException ex) {
-        log.warn(ex.getClass().getName(), ex);
+    protected ResponseEntity<Object> handleEntityExist(EntityExistException ex) {
+        log.warn("Entity already exist exception stack: {} ", Arrays.toString(ex.getStackTrace()));
         ErrorDTO errorDTO = new ErrorDTO(HttpStatus.CONFLICT, ex.getClass().getName(), ex.getMessage());
         return new ResponseEntity<>(errorDTO, new HttpHeaders(), errorDTO.getHttpStatus());
     }
     @ExceptionHandler(BadRequestException.class)
-    protected ResponseEntity<Object> handleEntityNotFound(BadRequestException ex) {
-        log.warn(ex.getClass().getName(), ex);
+    protected ResponseEntity<Object> handleBadRequest(BadRequestException ex) {
+        log.warn("Bad request exception stack: {} ", Arrays.toString(ex.getStackTrace()));
         ErrorDTO errorDTO = new ErrorDTO(HttpStatus.BAD_REQUEST, ex.getClass().getName(), ex.getMessage());
         return new ResponseEntity<>(errorDTO, new HttpHeaders(), errorDTO.getHttpStatus());
     }
 
     @ExceptionHandler(DateTimeParseException.class)
-    protected ResponseEntity<Object> handleEntityNotFound(DateTimeParseException ex) {
-        log.warn(ex.getClass().getName(), ex);
+    protected ResponseEntity<Object> handleDateTimeParseException(DateTimeParseException ex) {
+        log.warn("Date time parse exception stack: {} ", Arrays.toString(ex.getStackTrace()));
         ErrorDTO errorDTO = new ErrorDTO(HttpStatus.BAD_REQUEST, ex.getClass().getName(), ex.getMessage());
         return new ResponseEntity<>(errorDTO, new HttpHeaders(), errorDTO.getHttpStatus());
     }
 
     @ExceptionHandler(InvalidOrderException.class)
-    protected ResponseEntity<Object> handleEntityNotFound(InvalidOrderException ex) {
-        log.warn(ex.getClass().getName(), ex);
+    protected ResponseEntity<Object> handleInvalidOrderException(InvalidOrderException ex) {
+        log.warn("Invalid order exception stack: {} ", Arrays.toString(ex.getStackTrace()));
         ErrorDTO errorDTO = new ErrorDTO(HttpStatus.BAD_REQUEST, ex.getClass().getName(), ex.getMessage());
         return new ResponseEntity<>(errorDTO, new HttpHeaders(), errorDTO.getHttpStatus());
     }
@@ -93,7 +94,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> handleAll(Exception ex) {
-        log.warn(ex.getClass().getName(), ex);
+        log.warn("Server exception stack: {} ", Arrays.toString(ex.getStackTrace()));
         ErrorDTO errorDto =
                 new ErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR, ex.getLocalizedMessage(), "error occurred");
         return new ResponseEntity<>(errorDto, new HttpHeaders(), errorDto.getHttpStatus());

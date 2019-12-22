@@ -9,7 +9,6 @@ import java.util.List;
 public class GuestDTO {
     private int id;
     private String phoneNumber;
-    private List<Integer> roomNumbers;
     private String firstName;
     private String secondName;
     private String thirdName;

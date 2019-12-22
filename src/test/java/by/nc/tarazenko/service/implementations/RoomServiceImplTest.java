@@ -1,15 +1,11 @@
 package by.nc.tarazenko.service.implementations;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-
 import by.nc.tarazenko.convector.RoomConvector;
 import by.nc.tarazenko.dtos.RoomDTO;
 import by.nc.tarazenko.entity.Reservation;
 import by.nc.tarazenko.entity.Room;
 import by.nc.tarazenko.repository.ReservationRepository;
 import by.nc.tarazenko.repository.RoomRepository;
-import by.nc.tarazenko.service.RoomService;
 import by.nc.tarazenko.service.exceptions.InvalidOrderException;
 import by.nc.tarazenko.service.exceptions.RoomAlreadyExistException;
 import by.nc.tarazenko.service.exceptions.RoomNotFoundException;
@@ -22,9 +18,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoomServiceImplTest {
@@ -36,7 +35,6 @@ public class RoomServiceImplTest {
     ReservationRepository reservationRepository;
 
     private Room room;
-    private Reservation reservation;
     private List<Reservation> reservations;
 
     private RoomConvector roomConvector = new RoomConvector();
@@ -50,7 +48,7 @@ public class RoomServiceImplTest {
         room.setNumber(21);
         room.setId(12);
 
-        reservation = new Reservation();
+        Reservation reservation = new Reservation();
         reservation.setId(1);
         reservation.setCheckInDate(LocalDate.parse("2019-12-10"));
         reservation.setCheckOutDate(LocalDate.parse("2019-12-20"));
@@ -60,7 +58,7 @@ public class RoomServiceImplTest {
     }
 
     @Test
-    public void getByIdTest1() {
+    public void getByIdExpectRoomById() {
         doReturn(Optional.of(room)).when(roomRepository).findById(anyInt());
         RoomDTO roomDTOexpect = roomConvector.toDTO(room);
         RoomDTO roomDTO = roomService.getById(12);
@@ -68,13 +66,13 @@ public class RoomServiceImplTest {
     }
 
     @Test(expected = RoomNotFoundException.class)
-    public void getByIdExceptionTest() {
-        when(roomRepository.findById(anyInt())).thenThrow(RoomNotFoundException.class);
-        roomService.deleteById(0);
+    public void getByIdWhenRoomNotFound() {
+        when(roomRepository.findById(anyInt())).thenReturn(Optional.empty());
+        roomService.getById(0);
     }
 
     @Test
-    public void getAllOk() {
+    public void getAllRoomsAndReturnListOfRooms() {
         List<Room> roomsExpect = new ArrayList<>();
         roomsExpect.add(new Room(1, 217, null, null));
         roomsExpect.add(new Room(2, 218, null, null));
@@ -89,7 +87,7 @@ public class RoomServiceImplTest {
     }
 
     @Test
-    public void createOkTest() {
+    public void createRoomReturnedCreatedRoom() {
         doReturn(room).when(roomRepository).saveAndFlush(any());
         RoomDTO roomDTOexpect = roomConvector.toDTO(room);
         RoomDTO roomDTO = roomService.create(roomDTOexpect);
@@ -98,14 +96,14 @@ public class RoomServiceImplTest {
     }
 
     @Test(expected = RoomAlreadyExistException.class)
-    public void createExceptionAlreadyExist() {
+    public void createRoomWhenRoomAlreadyExistThrowAlreadyExistException() {
         doReturn(room).when(roomRepository).getRoomByNumber(anyInt());
         RoomDTO roomDTOexpect = roomConvector.toDTO(room);
         roomService.create(roomDTOexpect);
     }
 
     @Test
-    public void update() {
+    public void updateRoomReturnedRoomWhichWasUpdated() {
         doReturn(room).when(roomRepository).saveAndFlush(any());
         doReturn(Optional.of(room)).when(roomRepository).findById(anyInt());
         RoomDTO roomDTOexpect = roomConvector.toDTO(room);
@@ -116,73 +114,73 @@ public class RoomServiceImplTest {
     }
 
     @Test(expected = RoomNotFoundException.class)
-    public void updateNotFoundException() {
-        when(roomRepository.findById(anyInt())).thenThrow(RoomNotFoundException.class);
+    public void updateWhenRoomNotFoundAndThrowNotFoundException() {
+        when(roomRepository.findById(anyInt())).thenReturn(Optional.empty());
         RoomDTO roomDTOexpect = roomConvector.toDTO(room);
-        RoomDTO roomDTO = roomService.update(roomDTOexpect);
+        roomService.update(roomDTOexpect);
     }
 
     @Test
-    public void deleteById() {
+    public void deleteByIdCheckMethodCall() {
         doReturn(Optional.of(room)).when(roomRepository).findById(anyInt());
         roomService.deleteById(1);
         verify(roomRepository).deleteById(anyInt());
     }
 
     @Test(expected = RoomNotFoundException.class)
-    public void deleteByIdRoomNotFoundException() {
-        when(roomRepository.findById(anyInt())).thenThrow(RoomNotFoundException.class);
+    public void deleteByIdWhenRoomNotExistThrowRoomNotFoundException() {
+        when(roomRepository.findById(anyInt())).thenReturn(Optional.empty());
         roomService.deleteById(1);
     }
 
 
     @Test
-    public void getFreeTest1() {
+    public void getFreeWhenRoomAlreadyReservedWhenDatesInsideReservedRoom() {
         doReturn(reservations).when(reservationRepository).getReservationByRoom(any());
-        doReturn(Arrays.asList(room)).when(roomRepository).findAll();
-        List<RoomDTO> roomDTOs = roomService.getFree(LocalDate.parse("2019-12-10"),
+        doReturn(Collections.singletonList(room)).when(roomRepository).findAll();
+        List<RoomDTO> roomDTOs = roomService.getFree(LocalDate.parse("2019-12-11"),
                 LocalDate.parse("2019-12-15"));
         assertEquals( 0,roomDTOs.size());
     }
 
     @Test
-    public void getFreeTest2() {
+    public void getFreeWhenRoomNotReservedBeforeReservedInterval() {
         doReturn(reservations).when(reservationRepository).getReservationByRoom(any());
-        doReturn(Arrays.asList(room)).when(roomRepository).findAll();
+        doReturn(Collections.singletonList(room)).when(roomRepository).findAll();
         List<RoomDTO> roomDTOs = roomService.getFree(LocalDate.parse("2019-12-01"),
                 LocalDate.parse("2019-12-08"));
         assertEquals( 1,roomDTOs.size());
     }
 
     @Test
-    public void getFreeTest3() {
+    public void getFreeWhenRoomAlreadyReservedWhenCheckoutDateInReservedInterval() {
         doReturn(reservations).when(reservationRepository).getReservationByRoom(any());
-        doReturn(Arrays.asList(room)).when(roomRepository).findAll();
+        doReturn(Collections.singletonList(room)).when(roomRepository).findAll();
         List<RoomDTO> roomDTOs = roomService.getFree(LocalDate.parse("2019-12-02"),
                 LocalDate.parse("2019-12-11"));
         assertEquals( 0,roomDTOs.size());
     }
 
     @Test
-    public void getFreeTest4() {
+    public void getFreeWhenRoomAlreadyReservedWhenCheckinDateInReservedInterval() {
         doReturn(reservations).when(reservationRepository).getReservationByRoom(any());
-        doReturn(Arrays.asList(room)).when(roomRepository).findAll();
+        doReturn(Collections.singletonList(room)).when(roomRepository).findAll();
         List<RoomDTO> roomDTOs = roomService.getFree(LocalDate.parse("2019-12-15"),
                 LocalDate.parse("2019-12-25"));
         assertEquals(0,roomDTOs.size());
     }
 
     @Test
-    public void getFreeTest5() {
+    public void getFreeWhenRoomNotReservedAfterReservedInterval() {
         doReturn(reservations).when(reservationRepository).getReservationByRoom(any());
-        doReturn(Arrays.asList(room)).when(roomRepository).findAll();
+        doReturn(Collections.singletonList(room)).when(roomRepository).findAll();
         List<RoomDTO> roomDTOs = roomService.getFree(LocalDate.parse("2019-12-21"),
                 LocalDate.parse("2019-12-25"));
         assertEquals(1,roomDTOs.size());
     }
 
     @Test(expected = InvalidOrderException.class)
-    public void getFreeInvalidOrderDate() {
+    public void getFreeInputDatesInInvalidOrderThrowInvalidOrderException() {
         LocalDate checkIn = LocalDate.parse("2019-12-18");
         LocalDate checkOut = LocalDate.parse("2019-12-10");
         roomService.getFree(checkIn, checkOut);

@@ -103,11 +103,11 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public List<Attendance> getAttendances(int guestId) {
         log.debug("Get guest attendances guestId - {}", guestId);
-        guestRepository.findById(guestId).orElseThrow(() ->
+        Guest guest = guestRepository.findById(guestId).orElseThrow(() ->
                 new GuestNotFoundException("There is no guest with id - " + guestId));
-        List<Attendance> attendances = guestRepository.findById(guestId).get().getAttendances();
+        List<Attendance> attendances = guest.getAttendances();
         log.debug("Get guest attendances: attendances - {}", attendances);
-        return guestRepository.findById(guestId).get().getAttendances();
+        return attendances;
     }
 
     @Override

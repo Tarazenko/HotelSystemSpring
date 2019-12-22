@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -42,14 +41,13 @@ public class GuestServiceImplTest {
 
     private Guest guest;
     private Attendance attendance;
-    private Passport passport;
 
     private GuestConvector guestConvector = new GuestConvector();
 
     @Before
     public void init() {
 
-        passport = new Passport();
+        Passport passport = new Passport();
         passport.setFirstName("Ilya");
         passport.setSecondName("Tarasenko");
         passport.setThirdName("Vit");
@@ -69,7 +67,7 @@ public class GuestServiceImplTest {
     }
 
     @Test
-    public void getById() {
+    public void getByIdExpectGuestById() {
         doReturn(Optional.of(guest)).when(guestRepository).findById(anyInt());
         GuestDTO guestDTOexp = guestConvector.toDTO(guest);
         GuestDTO guestDTO = guestService.getById(1);
@@ -78,13 +76,13 @@ public class GuestServiceImplTest {
     }
 
     @Test(expected = GuestNotFoundException.class)
-    public void getByIdNotFoundException() {
-        when(guestRepository.findById(anyInt())).thenThrow(GuestNotFoundException.class);
+    public void getByIdGuestNotExistThrowNotFoundException() {
+        when(guestRepository.findById(anyInt())).thenReturn(Optional.empty());
         guestService.getById(1);
     }
 
     @Test
-    public void getAll() {
+    public void getAllReturnsListOfGuests() {
         doReturn(Collections.singletonList(guest)).when(guestRepository).findAll();
         List<GuestDTO> guestDTOsExp = Collections.singletonList(guestConvector.toDTO(guest));
         List<GuestDTO> guestDTOs = guestService.getAll();
@@ -93,7 +91,7 @@ public class GuestServiceImplTest {
     }
 
     @Test
-    public void create() {
+    public void createReturnedCreatedGuest() {
         doReturn(guest).when(guestRepository).saveAndFlush(any());
         GuestDTO guestDTOexpect = guestConvector.toDTO(guest);
         GuestDTO guestDTO = guestService.create(guestDTOexpect);
@@ -102,14 +100,14 @@ public class GuestServiceImplTest {
     }
 
     @Test(expected = GuestAlreadyExistException.class)
-    public void createAlredyExistException() {
+    public void createAlreadyExistGuestThrowAlreadyExistException() {
         doReturn(guest).when(guestRepository).getGuestByPhoneNumber(anyString());
         GuestDTO guestDTOexpect = guestConvector.toDTO(guest);
-        GuestDTO guestDTO = guestService.create(guestDTOexpect);
+        guestService.create(guestDTOexpect);
     }
 
     @Test
-    public void update() {
+    public void updateGuestReturnedGuestWhichWasUpdated() {
         doReturn(guest).when(guestRepository).saveAndFlush(any());
         doReturn(Optional.of(guest)).when(guestRepository).findById(any());
         GuestDTO guestDTOexpect = guestConvector.toDTO(guest);
@@ -119,53 +117,53 @@ public class GuestServiceImplTest {
     }
 
     @Test(expected = GuestNotFoundException.class)
-    public void updateNotFoundException() {
-        when(guestRepository.findById(anyInt())).thenThrow(GuestNotFoundException.class);
+    public void updateWhenGuestNotFoundAndThrowNotFoundException() {
+        when(guestRepository.findById(anyInt())).thenReturn(Optional.empty());
         guestService.update(guestConvector.toDTO(guest));
     }
 
     @Test
-    public void deleteById() {
+    public void deleteByIdCheckCallDeletingMethod() {
         doReturn(Optional.of(guest)).when(guestRepository).findById(anyInt());
         guestService.deleteById(1);
         verify(guestRepository).deleteById(anyInt());
     }
 
     @Test(expected = GuestNotFoundException.class)
-    public void deleteByIdNOtFoundException() {
+    public void deleteByIdWhenGuestNotExistThrowNotFoundException() {
         when(guestRepository.findById(anyInt())).thenThrow(GuestNotFoundException.class);
         guestService.deleteById(1);
     }
 
     @Test(expected = GuestNotFoundException.class)
-    public void getAttendancesGuestnotFoundException() {
-        when(guestRepository.findById(anyInt())).thenThrow(GuestNotFoundException.class);
+    public void getAttendancesGuestNotExistThrowFoundException() {
+        when(guestRepository.findById(anyInt())).thenReturn(Optional.empty());
         guestService.getAttendances(1);
     }
 
     @Test
-    public void getAttendances() {
+    public void getAttendancesReturnedListAttendancesByGuestId() {
         guest.setAttendances(Collections.singletonList(attendance));
         doReturn(Optional.of(guest)).when(guestRepository).findById(anyInt());
         guestService.getAttendances(1);
-        verify(guestRepository, times(2)).findById(anyInt());
+        verify(guestRepository).findById(anyInt());
     }
 
     @Test(expected = GuestNotFoundException.class)
-    public void addAttendanceGuestNotFoundException() {
+    public void addAttendanceGuestNotExistThrowNotFoundException() {
         doReturn(Optional.of(attendance)).when(attendanceRepository).findById(any());
-        when(guestRepository.findById(anyInt())).thenThrow(GuestNotFoundException.class);
+        when(guestRepository.findById(anyInt())).thenReturn(Optional.empty());
         guestService.addAttendance(1, 1);
     }
 
     @Test(expected = AttendanceNotFoundException.class)
-    public void addAttendanceAttendanceNotFoundException() {
-        when(attendanceRepository.findById(anyInt())).thenThrow(AttendanceNotFoundException.class);
+    public void addAttendanceAttendanceNotExistThrowNotFoundException() {
+        when(attendanceRepository.findById(anyInt())).thenReturn(Optional.empty());
         guestService.addAttendance(1, 1);
     }
 
     @Test
-    public void addAttendance() {
+    public void addAttendanceByGuestIdAndAttendanceIdReturnGuestWithAddingAttendance() {
         doReturn(Optional.of(attendance)).when(attendanceRepository).findById(any());
         doReturn(Optional.of(guest)).when(guestRepository).findById(any());
         doReturn(guest).when(guestRepository).saveAndFlush(any());
@@ -178,6 +176,4 @@ public class GuestServiceImplTest {
         verify(guestRepository).findById(any());
         verify(attendanceRepository).findById(any());
     }
-
-
 }

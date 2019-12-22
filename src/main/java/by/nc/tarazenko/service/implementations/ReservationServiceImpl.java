@@ -1,6 +1,6 @@
 package by.nc.tarazenko.service.implementations;
 
-import by.nc.tarazenko.convector.ReservationConvecter;
+import by.nc.tarazenko.convector.ReservationConvector;
 import by.nc.tarazenko.convector.RoomConvector;
 import by.nc.tarazenko.dtos.ReservationDTO;
 import by.nc.tarazenko.entity.Guest;
@@ -35,7 +35,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final RoomServiceImpl roomService;
 
-    private ReservationConvecter reservationConvecter = new ReservationConvecter();
+    private ReservationConvector reservationConvector = new ReservationConvector();
 
     private RoomConvector roomConvector = new RoomConvector();
 
@@ -53,7 +53,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->
                 new ReservationNotFoundException(String.format("There is no reservation with id - %d", id)));
         log.debug("Returning reservation {}", reservation);
-        return reservationConvecter.toDTO(reservation);
+        return reservationConvector.toDTO(reservation);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> reservations = reservationRepository.findAll();
         List<ReservationDTO> reservationDTOs = new ArrayList<>();
         for (Reservation reservation : reservations) {
-            reservationDTOs.add(reservationConvecter.toDTO(reservation));
+            reservationDTOs.add(reservationConvector.toDTO(reservation));
         }
         log.debug("Returning - {}", reservations);
         return reservationDTOs;
@@ -71,7 +71,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationDTO create(ReservationDTO reservationDTO) {
         log.debug("Creating {}", reservationDTO);
-        Reservation reservation = reservationConvecter.fromDTO(reservationDTO);
+        Reservation reservation = reservationConvector.fromDTO(reservationDTO);
         int guestId = reservation.getGuest().getId();
         int roomId = reservation.getRoom().getId();
         Guest guest = guestRepository.findById(reservation.getGuest().getId()).orElseThrow(() ->
@@ -85,20 +85,20 @@ public class ReservationServiceImpl implements ReservationService {
                         reservation.getCheckOutDate(), ChronoUnit.DAYS));
         reservation = reservationRepository.saveAndFlush(reservation);
         log.debug("Created {}", reservation);
-        return reservationConvecter.toDTO(reservation);
+        return reservationConvector.toDTO(reservation);
     }
 
     @Override
     public ReservationDTO update(ReservationDTO reservationDTO) {
         log.debug("Updating {}", reservationDTO);
-        Reservation reservation = reservationConvecter.fromDTO(reservationDTO);
+        Reservation reservation = reservationConvector.fromDTO(reservationDTO);
         int reservationId = reservation.getId();
         reservationRepository.findById(reservation.getId()).orElseThrow(() ->
                 new ReservationNotFoundException(String.format("There is no reservation with id - %d",
                         reservationId)));
         reservation = reservationRepository.saveAndFlush(reservation);
         log.debug("Update {}", reservation);
-        return reservationConvecter.toDTO(reservation);
+        return reservationConvector.toDTO(reservation);
     }
 
     @Override

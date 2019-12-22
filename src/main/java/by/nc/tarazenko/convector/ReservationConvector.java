@@ -5,7 +5,7 @@ import by.nc.tarazenko.entity.Guest;
 import by.nc.tarazenko.entity.Reservation;
 import by.nc.tarazenko.entity.Room;
 
-public class ReservationConvecter implements Convector<ReservationDTO, Reservation> {
+public class ReservationConvector implements Convector<ReservationDTO, Reservation> {
 
     @Override
     public ReservationDTO toDTO(Reservation reservation) {

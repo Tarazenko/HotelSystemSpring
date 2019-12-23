@@ -25,7 +25,7 @@ public class GuestServiceImpl implements GuestService {
 
     private final GuestRepository guestRepository;
 
-    private GuestConvector guestConvector = new GuestConvector();
+    private final GuestConvector guestConvector = new GuestConvector();
 
     @Autowired
     public GuestServiceImpl(AttendanceRepository attendanceRepository, GuestRepository guestRepository) {

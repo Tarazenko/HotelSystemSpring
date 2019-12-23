@@ -20,7 +20,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
 
-    private AttendanceConvector attendanceConvector = new AttendanceConvector();
+    private final AttendanceConvector attendanceConvector = new AttendanceConvector();
 
     @Autowired
     public AttendanceServiceImpl(AttendanceRepository attendanceRepository) {

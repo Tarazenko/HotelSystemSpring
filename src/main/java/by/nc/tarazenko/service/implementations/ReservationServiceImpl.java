@@ -35,9 +35,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final RoomServiceImpl roomService;
 
-    private ReservationConvector reservationConvector = new ReservationConvector();
+    private final ReservationConvector reservationConvector = new ReservationConvector();
 
-    private RoomConvector roomConvector = new RoomConvector();
+    private final RoomConvector roomConvector = new RoomConvector();
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository, RoomRepository roomRepository, GuestRepository guestRepository, RoomServiceImpl roomService) {

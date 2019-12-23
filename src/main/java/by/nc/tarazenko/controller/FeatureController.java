@@ -1,7 +1,6 @@
 package by.nc.tarazenko.controller;
 
 import by.nc.tarazenko.dtos.FeatureDTO;
-import by.nc.tarazenko.entity.Feature;
 import by.nc.tarazenko.service.FeatureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

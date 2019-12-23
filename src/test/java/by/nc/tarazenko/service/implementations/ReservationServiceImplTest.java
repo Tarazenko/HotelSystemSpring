@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -45,7 +44,7 @@ public class ReservationServiceImplTest {
 
     private Reservation reservation;
 
-    private ReservationConvector reservationConvector = new ReservationConvector();
+    private final ReservationConvector reservationConvector = new ReservationConvector();
 
     @Before
     public void init() {

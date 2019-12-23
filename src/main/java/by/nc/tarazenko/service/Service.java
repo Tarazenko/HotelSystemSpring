@@ -1,9 +1,6 @@
 package by.nc.tarazenko.service;
 
-import by.nc.tarazenko.entity.Guest;
-
 import java.util.List;
-import java.util.Optional;
 
 public interface Service<T> {
     T getById(int id);

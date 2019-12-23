@@ -37,7 +37,7 @@ public class RoomServiceImplTest {
     private Room room;
     private List<Reservation> reservations;
 
-    private RoomConvector roomConvector = new RoomConvector();
+    private final RoomConvector roomConvector = new RoomConvector();
 
     @InjectMocks
     RoomServiceImpl roomService;

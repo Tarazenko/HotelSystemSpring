@@ -1,6 +1,5 @@
 package by.nc.tarazenko.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +29,7 @@ public class Room {
             inverseJoinColumns = @JoinColumn(name = "feature_id"))
     private List<Feature> features = new ArrayList<>();
 
-   // @JsonIgnore
+    // @JsonIgnore
     @OneToMany(mappedBy = "room")
     private List<Reservation> reservations;
 

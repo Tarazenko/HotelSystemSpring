@@ -20,7 +20,7 @@ public class FeatureServiceImpl implements FeatureService {
 
     private final FeatureRepository featureRepository;
 
-    private FeatureConvector featureConvector = new FeatureConvector();
+    private final FeatureConvector featureConvector = new FeatureConvector();
 
     @Autowired
     public FeatureServiceImpl(FeatureRepository featureRepository) {

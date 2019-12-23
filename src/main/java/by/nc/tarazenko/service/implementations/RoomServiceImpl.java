@@ -14,7 +14,6 @@ import by.nc.tarazenko.service.exceptions.InvalidOrderException;
 import by.nc.tarazenko.service.exceptions.RoomAlreadyExistException;
 import by.nc.tarazenko.service.exceptions.RoomNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +31,7 @@ public class RoomServiceImpl implements RoomService {
 
     private final FeatureRepository featureRepository;
 
-    private RoomConvector roomConvector = new RoomConvector();
+    private final RoomConvector roomConvector = new RoomConvector();
 
     @Autowired
     public RoomServiceImpl(RoomRepository roomRepository, ReservationRepository reservationRepository, FeatureRepository featureRepository) {
@@ -129,7 +128,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<RoomDTO> getFree(LocalDate checkin, LocalDate checkout) {
-        log.debug("Getting free rooms to dates: checkin - {}, checkout - {}",checkin,checkout);
+        log.debug("Getting free rooms to dates: checkin - {}, checkout - {}", checkin, checkout);
         if (checkin.isAfter(checkout))
             throw new InvalidOrderException("Checkin date should be before checkout.");
         List<Room> rooms = roomRepository.findAll();

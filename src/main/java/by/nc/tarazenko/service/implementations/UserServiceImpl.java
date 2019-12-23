@@ -27,15 +27,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User getById(int id) {
-        User user = userRepository.findById(id).orElseThrow(()->
+        return userRepository.findById(id).orElseThrow(()->
                 new UserNotFoundException("There is no user with such id."));
-        return user;
     }
 
     @Override
     public List<User> getAll() {
-        List<User> users = userRepository.findAll();
-        return users;
+        return userRepository.findAll();
     }
 
     @Override
